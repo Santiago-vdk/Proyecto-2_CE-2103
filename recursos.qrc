@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>recursos/database.png</file>
+        <file>recursos/cmd.png</file>
+        <file>recursos/sql.png</file>
+    </qresource>
+</RCC>
