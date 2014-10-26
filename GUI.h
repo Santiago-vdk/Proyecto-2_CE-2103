@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QAction>
+#include <QTextEdit>
+#include <QTextCursor>
+#include <QList>
 
 
 namespace Ui {
@@ -18,21 +21,34 @@ public:
     ~GUI();
 
 private slots:
-//    void on_pushButton_clicked();
     void crearBaseDeDatos();
     void cambiarModoCMD();
     void cambiarModoSQL();
-
     void on_botonEnviar_clicked();
-
     void on_limpiarOutput_clicked();
+    void on_input_textChanged(const QString &arg1);
+    void on_output_textChanged();
 
+    void on_input_returnPressed();
+
+
+    void on_copyClipboard_clicked();
+    void vistaArbol();
 
 private:
     Ui::GUI *ui;
-//    QAction *ventananuevaBase;
-//    QAction *ventanacmd;
-//    QAction *ventanasql;
+
+public:
+    //QList<int> Casa;
+    QList<QTextEdit::ExtraSelection> selectionsOutput;
+    QTextCursor cursorOutput;
+
+
+
+
+
+
+
 };
 
 #endif // GUI_H
