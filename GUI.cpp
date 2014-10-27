@@ -16,6 +16,9 @@
 #include <QModelIndex>
 #include "objecttreemodel.h"
 
+#include "listaTabla.h"
+#include "tabla.h"
+
 using namespace std;
 
 GUI::GUI(QWidget *parent) :
@@ -31,8 +34,9 @@ GUI::GUI(QWidget *parent) :
     QPixmap sqlPix(":/recursos/sql.png");
 
     QToolBar *toolbar = addToolBar("ToolBar");
-    setIconSize(QSize(32,32));
+    setIconSize(QSize(40,40));
 
+    QAction *fsql = toolbar->addAction("FSQL");
     QAction *ventananuevaBase = toolbar->addAction(QIcon(nuevaBasePix),"Nueva Base de Datos");
     QAction *ventanacmd = toolbar->addAction(QIcon(cmdPix),"Cambiar a Modo CMD");
     QAction *ventanasql = toolbar->addAction(QIcon(sqlPix),"Ejecutar Busqueda");
@@ -58,7 +62,6 @@ GUI::GUI(QWidget *parent) :
     root->setObjectName( "root" );
     ui->arbolLayout->addWidget( ui->vistaArbol );
     ui->arbolWidget->setLayout(ui->arbolLayout);
-
     vistaArbol();
     //Fin de propiedades de las ventanas
 
@@ -78,9 +81,10 @@ void GUI::crearBaseDeDatos()
     if (ok && !text.isEmpty())
     {
         qDebug() << text;
-        QObject *tablas = new QObject(root);
-        tablas->setObjectName(text);
+        QObject *base = new QObject(root);
+        base->setObjectName(text);
         vistaArbol();
+        //Insertar en lista con bases
     }
     ui->vistaArbol->setDisabled(false);
     ui->input->setDisabled(false);
@@ -105,7 +109,11 @@ void GUI::on_botonEnviar_clicked()
         std::string comando = ui->input->text().toStdString();
         /*Se llama al parser con el comando ingresado
             * if (parser(comando))
+            * Luego implementar el comando grafico
            */
+
+
+
         ui->output->append(ui->input->text());
         ui->input->clear();
     }
@@ -125,7 +133,7 @@ void GUI::on_limpiarOutput_clicked()
 
 void GUI::on_input_textChanged(const QString &arg1)
 {
-    qDebug() << "Cambio";
+
 }
 
 void GUI::on_output_textChanged()
