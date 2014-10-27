@@ -47,24 +47,23 @@ GUI::GUI(QWidget *parent) :
     //Fin barra menu
 
     //Propiedades de las ventanas, botones y iconos
-
     ui->output->setReadOnly(true);
-    // ui->vistaArbol->setDisabled(true);
+    ui->vistaArbol->setDisabled(true);
     ui->input->setDisabled(true);
     ui->output->setReadOnly(true);
-
     cursorOutput = ui->output->textCursor();
 
+    //Set' arbol
+    root= new QObject();
+    root->setObjectName( "root" );
+    ui->arbolLayout->addWidget( ui->vistaArbol );
+    ui->arbolWidget->setLayout(ui->arbolLayout);
+
+
     vistaArbol();
-
-
     //Fin de propiedades de las ventanas
 
-
-
 }
-
-
 
 void GUI::crearBaseDeDatos()
 {
@@ -77,23 +76,15 @@ void GUI::crearBaseDeDatos()
     QString text =  inputDialog->getText(NULL ,"QInputDialog::getText() Example",
                                          "Nombre Base de Datos:", QLineEdit::Normal,
                                          QDir::home().dirName(), &ok);
-
     if (ok && !text.isEmpty())
     {
         qDebug() << text;
-
-
-
+        QObject *tablas = new QObject(root);
+        tablas->setObjectName(text);
+        vistaArbol();
     }
-
     ui->vistaArbol->setDisabled(false);
     ui->input->setDisabled(false);
-
-
-
-
-
-
 }
 
 void GUI::cambiarModoCMD()
@@ -107,12 +98,6 @@ void GUI::cambiarModoSQL()
 {
     qDebug() << "Modo SQL";
     ui->stackedWidget->setCurrentIndex(1);
-}
-
-
-GUI::~GUI()
-{
-    delete ui;
 }
 
 void GUI::on_botonEnviar_clicked()
@@ -184,13 +169,6 @@ void GUI::on_output_textChanged()
         QTextEdit::ExtraSelection sel = { cursorOutput, fmt3 };
         selectionsOutput.append(sel);
     }
-
-
-
-
-
-
-
     ui->output->setExtraSelections(selectionsOutput);
     ui->output->extraSelections().clear();
 }
@@ -204,6 +182,15 @@ void GUI::on_input_returnPressed()
            */
         ui->output->append(ui->input->text());
         ui->input->clear();
+
+
+        //Insercion de tabla nueva dentro arbol de tablas, deberia insertar dentro de una base de datos seleccionada
+//        QObject *tabla1 = new QObject( tablas );
+//        tabla1->setObjectName( "Tabla #1" );
+//        ui->vistaArbol->expandAll();
+
+
+
     }
     else{
         QMessageBox *empty =  new QMessageBox();
@@ -216,31 +203,35 @@ void GUI::on_copyClipboard_clicked()
 {
     ui->output->selectAll();
     ui->output->copy();
+
 }
 
 void GUI::vistaArbol()
 {
 
-    QObject *root= new QObject();
-    root->setObjectName( "root" );
-    QObject *tablas = new QObject(root);
-    tablas->setObjectName("Santi");
-
-    QObject *child;
-    QObject *foo = new QObject( tablas );
-    foo->setObjectName( "foo" );
-    child = new QObject( foo );
-    child->setObjectName( "Mark" );
-    child = new QObject( foo );
-    child->setObjectName( "Bob" );
-    child = new QObject( foo );
-    child->setObjectName( "Kent" );
 
     ObjectTreeModel *model = new ObjectTreeModel(root);
     ui->vistaArbol->setModel( model );
 
-    ui->arbolLayout->addWidget( ui->vistaArbol );
-    ui->arbolWidget->setLayout(ui->arbolLayout);
+
+}
+
+void GUI::on_pushButton_clicked()
+{
+
+//    child = new QObject( tabla1 );
+//    child->setObjectName( "Mark" );
+//    child = new QObject( tabla1 );
+//    child->setObjectName( "Bob" );
+//    child = new QObject( tabla1 );
+//    child->setObjectName( "Kent" );
+
+    ui->vistaArbol->expandAll();
+
+}
 
 
+GUI::~GUI()
+{
+    delete ui;
 }

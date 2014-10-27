@@ -28,22 +28,18 @@ private slots:
     void on_limpiarOutput_clicked();
     void on_input_textChanged(const QString &arg1);
     void on_output_textChanged();
-
     void on_input_returnPressed();
-
-
     void on_copyClipboard_clicked();
     void vistaArbol();
+    void on_pushButton_clicked();
 
 private:
     Ui::GUI *ui;
-
-public:
-    //QList<int> Casa;
+    QObject *root;
+    //QObject *tablas;
+    QObject *child;
     QList<QTextEdit::ExtraSelection> selectionsOutput;
     QTextCursor cursorOutput;
-
-
 
 
 
