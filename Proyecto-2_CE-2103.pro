@@ -16,13 +16,19 @@ SOURCES += main.cpp\
     facade.cpp \
     interprete.cpp \
     GUI.cpp \
-    ObjectTreeModel.cpp
+    ObjectTreeModel.cpp \
+    tabla.cpp \
+    nodoTabla.cpp \
+    listaTabla.cpp
 
 HEADERS  += \
     facade.h \
     interprete.h \
     GUI.h \
-    ObjectTreeModel.h
+    ObjectTreeModel.h \
+    tabla.h \
+    nodoTabla.h \
+    listaTabla.h
 
 FORMS    += \
     GUI.ui
