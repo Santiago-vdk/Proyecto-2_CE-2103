@@ -59,7 +59,6 @@ GUI::GUI(QWidget *parent) :
     ui->arbolLayout->addWidget( ui->vistaArbol );
     ui->arbolWidget->setLayout(ui->arbolLayout);
 
-
     vistaArbol();
     //Fin de propiedades de las ventanas
 
