@@ -13,12 +13,25 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     facade.cpp \
-    interprete.cpp
+    interprete.cpp \
+    GUI.cpp \
+    ObjectTreeModel.cpp \
+    tabla.cpp \
+    nodoTabla.cpp \
+    listaTabla.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     facade.h \
-    interprete.h
+    interprete.h \
+    GUI.h \
+    ObjectTreeModel.h \
+    tabla.h \
+    nodoTabla.h \
+    listaTabla.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    GUI.ui
+
+RESOURCES += \
+    recursos.qrc
