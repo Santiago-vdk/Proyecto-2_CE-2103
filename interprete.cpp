@@ -5,17 +5,46 @@ Interprete::Interprete()
 
 }
 
-bool Interprete::revisarSintaxis(string centencia)
+bool Interprete::revisarSintaxis(string sentencia)
 {
     //se obtiene la primera palabra y si coincide con alguna reservada se llama
     //al revisar correspondiente, sino retorna false directamente
-    return true;
-
+    if (sentencia.find("CREATE TABLE")==0){
+        return revisarCreateTable(sentencia);
+    }
+    if (sentencia.find("SELECT")==0){
+        return revisarSelect(sentencia);
+    }
+    if (sentencia.find("INSERT INTO")==0){
+        return revisarInsert(sentencia);
+    }
+    if (sentencia.find("UPDATE")==0){
+        return revisarUpdate(sentencia);
+    }
+    if (sentencia.find("DELETE FROM")==0){
+        return revisarDelete(sentencia);
+    }
+    if (sentencia.find("CREATE INDEX")==0){
+        return revisarCreateIndex(sentencia);
+    }
+    if (sentencia.find("COMPRESS TABLE")==0){
+        return revisarCompress(sentencia);
+    }
+    if (sentencia.find("BACKUP TABLE")==0){
+        return revisarBackup(sentencia);
+    }
+    if (sentencia.find("RESTORE TABLE")==0){
+        return revisarRestore(sentencia);
+    }
+    else{
+        //aqui se deberia mostrar mensaje de error por no encontrar palabra reservada inicial
+        return false;
+    }
 }
 
-bool Interprete::ejecutar(string centencia)
+bool Interprete::ejecutar(string sentencia)
 {
-    //es bool ya que retorna true si se ejecuto correctamente la centencia y false si
+    //es bool ya que retorna true si se ejecuto correctamente la sentencia y false si
     //ocurrio un error, ej: la tabla o columna no existe
     return true;
 }
@@ -34,61 +63,214 @@ bool Interprete::existeColumna(string tabla, string columna)
     return true;
 }
 
+bool Interprete::nombreValido(string nombre)
+{
+    if((nombre.length()>0)&&(nombre.length()<30)){
+        if((nombre.find(",")==string::npos)&&(nombre.find("'")==string::npos)&&
+                (nombre.find("\"")==string::npos)&&(nombre.find(".")==string::npos)&&
+                (nombre.find(";")==string::npos)){
+            return true;
+
+        }
+        else{
+            return false;
+        }
+    }
+    else{
+        return false;
+    }
+}
+
+bool Interprete::datoValido(string dato)
+{
+    if(dato.compare("Integer")||dato.compare("String")||dato.compare("Decimal")){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 
 
 //***************************************************************
 
 
 
-bool Interprete::revisarCreateTable(string centencia)
+bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de create table
 {
-    //se revisa sintaxis de create table
-    return true;
+    if((sentencia.find(" ")==12)){
+        if(sentencia.find("(")!=string::npos){
+            string token1=sentencia.substr(13,sentencia.find("(")-13);
+            if(nombreValido(token1)){
+                if((sentencia.find(")")!=string::npos) &&
+                        (sentencia.find(")") == sentencia.length()-1)){
+
+                    string token2=sentencia.substr(sentencia.find("(")+1,sentencia.length()-1);
+                    while(token2.find(",")!=string::npos){
+                        if(token2.find(":")!=string::npos){
+                            string tokenColumna = token2.substr(0,token2.find(":")-1);
+                            string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-1);
+                            if(nombreValido(tokenColumna) && datoValido(tokenDato)){
+                                token2=token2.substr(token2.find(",")+1,token2.length()-1);
+                            }
+                            else{
+                                //nombre de columna o tipo de dato invalidos
+                                return false;
+                            }
+                        }
+                    }
+                    string tokenColumna = token2.substr(0,token2.find(":")-1);
+                    string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-1);
+                    if(nombreValido(tokenColumna) && datoValido(tokenDato)){
+                        return true;
+                    }
+                    else{
+                        //nombre de columna o tipo de dato invalidos
+                        return false;
+                    }
+
+                }
+
+                else{
+                    //falta cerrar parentesis o hay caracteres despues de cerrar parentesis
+                    return false;
+                }
+            }
+            else{
+                //nombre invalido
+                return false;
+            }
+        }
+        else{
+            //no abre parentesis
+            return false;
+        }
+    }
+    else{
+        //error no se dejo espacio luego de la palabra reservada
+        return false;
+    }
+
+
 }
 
-bool Interprete::revisarSelect(string centencia)
+
+bool Interprete::revisarSelect(string sentencia)//se revisa sintaxis de select
 {
-    //se revisa sintaxis de select
-    return true;
+    if((sentencia.find(" ")==6)){
+        if((sentencia.find("FROM")!=string::npos)&&(sentencia.find("FROM")!=7)&&(sentencia.length()>=15)){
+            if(sentencia.find("WHERE")!=string::npos){
+                string token1 = sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()-sentencia.find("WHERE")+5);
+                while(token1.length()>0){
+                    if(token1.find(" ")!=string::npos){
+                        string condicionIzq = token1.substr(0,token1.find(" "));
+                        token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
+                        if(condicionIzq.length()>0){
+
+                            if(token1.find(" ")!=string::npos){
+                                string operador = token1.substr(0,token1.find(" "));
+                                token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
+                                if(operador.compare("=") || operador.compare("<>") || operador.compare(">") || operador.compare(">=")
+                                        || operador.compare("<") || operador.compare("<=")){
+
+                                    if(token1.find(" ")!=string::npos){
+                                        string condicionDer = token1.substr(0,token1.find(" "));
+                                        token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
+                                        if(condicionDer.length()>0){
+                                            if(token1.length()>0){
+                                                if(token1.find("OR ")==0){
+                                                    token1=token1.substr(3,token1.length()-3);
+                                                }
+                                                if(token1.find("AND ")==0){
+                                                    token1=token1.substr(4,token1.length()-3);
+                                                }
+                                                else{
+                                                    return false;
+                                                }
+                                            }
+
+                                        }
+                                        else{
+                                            return false;
+                                        }
+                                    }
+                                    else{
+                                        return false;
+                                    }
+                                }
+                                else{
+                                    return false;
+                                }
+                            }
+                            else{
+                                return false;
+                            }
+                        }
+                        else{
+                            return false;
+                        }
+                    }
+                    else{
+                        return false;
+                    }
+
+
+
+                }
+            }
+            else{
+                return true;//validacion sin WHERE
+            }
+        }
+        else{
+            return false;
+        }
+    }
+    else{
+        return false;
+    }
+
+
 }
 
-bool Interprete::revisarInsert(string centencia)
+bool Interprete::revisarInsert(string sentencia)
 {
     //se revisa sintaxis de insert
     return true;
 }
 
-bool Interprete::revisarUpdate(string centencia)
+bool Interprete::revisarUpdate(string sentencia)
 {
     //se revisa sintaxis de update
     return true;
 }
 
-bool Interprete::revisarDelete(string centencia)
+bool Interprete::revisarDelete(string sentencia)
 {
     //se revisa sintaxis de delete
     return true;
 }
 
-bool Interprete::revisarCreateIndex(string centencia)
+bool Interprete::revisarCreateIndex(string sentencia)
 {
     //se revisa sintaxis de create index
     return true;
 }
 
-bool Interprete::revisarCompress(string centencia)
+bool Interprete::revisarCompress(string sentencia)
 {
     //se revisa sintaxis de compress
     return true;
 }
 
-bool Interprete::revisarBackup(string centencia)
+bool Interprete::revisarBackup(string sentencia)
 {
     //se revisa sintaxis de backup
     return true;
 }
 
-bool Interprete::revisarRestore(string centencia)
+bool Interprete::revisarRestore(string sentencia)
 {
     //se revisa sintaxis de restore
     return true;
@@ -99,55 +281,55 @@ bool Interprete::revisarRestore(string centencia)
 
 
 
-bool Interprete::ejecutarCreateTable(string centencia)
+bool Interprete::ejecutarCreateTable(string sentencia)
 {
     //se ejecuta create table
     return true;
 }
 
-bool Interprete::ejecutarSelect(string centencia)
+bool Interprete::ejecutarSelect(string sentencia)
 {
     //se ejecuta select
     return true;
 }
 
-bool Interprete::ejecutarInsert(string centencia)
+bool Interprete::ejecutarInsert(string sentencia)
 {
     //se ejecuta insert
     return true;
 }
 
-bool Interprete::ejecutarUpdate(string centencia)
+bool Interprete::ejecutarUpdate(string sentencia)
 {
     //se ejecuta update
     return true;
 }
 
-bool Interprete::ejecutarDelete(string centencia)
+bool Interprete::ejecutarDelete(string sentencia)
 {
     //se ejecuta delete
     return true;
 }
 
-bool Interprete::ejecutarCreateIndex(string centencia)
+bool Interprete::ejecutarCreateIndex(string sentencia)
 {
     //se ejecuta create index
     return true;
 }
 
-bool Interprete::ejecutarCompress(string centencia)
+bool Interprete::ejecutarCompress(string sentencia)
 {
     //se ejecuta compress
     return true;
 }
 
-bool Interprete::ejecutarBackup(string centencia)
+bool Interprete::ejecutarBackup(string sentencia)
 {
     //se ejecuta backup
     return true;
 }
 
-bool Interprete::ejecutarRestore(string centencia)
+bool Interprete::ejecutarRestore(string sentencia)
 {
     //se ejecuta restore
     return true;

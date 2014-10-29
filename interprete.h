@@ -8,33 +8,35 @@ class Interprete
 public:
 
     Interprete();
-    bool revisarSintaxis(string centencia);
-    bool ejecutar(string centencia);
+    bool revisarSintaxis(string sentencia);
+    bool ejecutar(string sentencia);
 
 private:
 
     bool existeTabla(string tabla);
     bool existeColumna(string tabla,string columna);
+    bool nombreValido(string nombre);
+    bool datoValido(string dato);
 
-    bool revisarCreateTable(string centencia);
-    bool revisarSelect(string centencia);
-    bool revisarInsert(string centencia);
-    bool revisarUpdate(string centencia);
-    bool revisarDelete(string centencia);
-    bool revisarCreateIndex(string centencia);
-    bool revisarCompress(string centencia);
-    bool revisarBackup(string centencia);
-    bool revisarRestore(string centencia);
+    bool revisarCreateTable(string sentencia);
+    bool revisarSelect(string sentencia);
+    bool revisarInsert(string sentencia);
+    bool revisarUpdate(string sentencia);
+    bool revisarDelete(string sentencia);
+    bool revisarCreateIndex(string sentencia);
+    bool revisarCompress(string sentencia);
+    bool revisarBackup(string sentencia);
+    bool revisarRestore(string sentencia);
 
-    bool ejecutarCreateTable(string centencia);
-    bool ejecutarSelect(string centencia);
-    bool ejecutarInsert(string centencia);
-    bool ejecutarUpdate(string centencia);
-    bool ejecutarDelete(string centencia);
-    bool ejecutarCreateIndex(string centencia);
-    bool ejecutarCompress(string centencia);
-    bool ejecutarBackup(string centencia);
-    bool ejecutarRestore(string centencia);
+    bool ejecutarCreateTable(string sentencia);
+    bool ejecutarSelect(string sentencia);
+    bool ejecutarInsert(string sentencia);
+    bool ejecutarUpdate(string sentencia);
+    bool ejecutarDelete(string sentencia);
+    bool ejecutarCreateIndex(string sentencia);
+    bool ejecutarCompress(string sentencia);
+    bool ejecutarBackup(string sentencia);
+    bool ejecutarRestore(string sentencia);
 };
 
 #endif // INTERPRETE_H
