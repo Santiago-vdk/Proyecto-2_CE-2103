@@ -7,8 +7,8 @@ class Facade
 {
 public:
     Facade();
-    bool revizarSintaxis(string centencia);//   estos metodos podrian devolver strings con
-    bool ejecutar(string centencia);//  errores mas directos para los msjs de error visuales
+    bool revizarSintaxis(string sentencia);//   estos metodos podrian devolver strings con
+    bool ejecutar(string sentencia);//  errores mas directos para los msjs de error visuales
     Interprete _interprete;
 };
 
