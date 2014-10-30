@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1016</width>
-    <height>667</height>
+    <height>677</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,19 +111,6 @@
       </property>
       <property name="text">
        <string>Copiar-Texto</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>360</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>tabla nueva</string>
       </property>
      </widget>
     </widget>

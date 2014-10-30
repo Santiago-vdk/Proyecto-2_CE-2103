@@ -6,6 +6,7 @@
 #include <QTextEdit>
 #include <QTextCursor>
 #include <QList>
+#include <QString>
 
 
 namespace Ui {
@@ -32,6 +33,7 @@ private slots:
     void on_copyClipboard_clicked();
     void vistaArbol();
     void on_pushButton_clicked();
+    void crearPalabrasReservadas();
 
 private:
     Ui::GUI *ui;
@@ -40,6 +42,8 @@ private:
     QObject *child;
     QList<QTextEdit::ExtraSelection> selectionsOutput;
     QTextCursor cursorOutput;
+    QList<QString> listaPalabrasReservadas;
+    QList<QString> listaTiposReservados;
 
 
 

@@ -18,6 +18,7 @@
 
 #include "listaTabla.h"
 #include "tabla.h"
+#include <facade.h>
 
 using namespace std;
 
@@ -27,6 +28,8 @@ GUI::GUI(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
+    Facade facade = new Facade();
 
     //Barra de Menu
     QPixmap nuevaBasePix(":/recursos/database.png");
@@ -64,6 +67,10 @@ GUI::GUI(QWidget *parent) :
     ui->arbolWidget->setLayout(ui->arbolLayout);
     vistaArbol();
     //Fin de propiedades de las ventanas
+
+
+    crearPalabrasReservadas();
+
 
 }
 
@@ -165,17 +172,25 @@ void GUI::on_output_textChanged()
         selectionsOutput.append(sel);
     }
 
-    //Obtener palabras reservadas por facade
-    while( !(cursorOutput = ui->output->document()->find(QRegExp("CREATE TABLE"), cursorOutput)).isNull()) {
-        QTextEdit::ExtraSelection sel = { cursorOutput, fmt };
-        selectionsOutput.append(sel);
+    //Palabras reservadas
+    for(int i = 0; i < listaPalabrasReservadas.size(); i++){
+        while( !(cursorOutput = ui->output->document()->find(QRegExp(listaPalabrasReservadas.at(i)), cursorOutput)).isNull()) {
+            QTextEdit::ExtraSelection sel = { cursorOutput, fmt };
+            selectionsOutput.append(sel);
+        }
     }
 
-    //Palabras reservadas
-    while( !(cursorOutput = ui->output->document()->find(QRegExp("String"), cursorOutput)).isNull()) {
-        QTextEdit::ExtraSelection sel = { cursorOutput, fmt3 };
-        selectionsOutput.append(sel);
+    //Tipos reservadas
+    for(int i = 0; i < listaTiposReservados.size(); i++){
+
+        while( !(cursorOutput = ui->output->document()->find(QRegExp(listaTiposReservados.at(i)), cursorOutput)).isNull()) {
+            QTextEdit::ExtraSelection sel = { cursorOutput, fmt3 };
+            selectionsOutput.append(sel);
+        }
     }
+
+
+
     ui->output->setExtraSelections(selectionsOutput);
     ui->output->extraSelections().clear();
 }
@@ -191,7 +206,7 @@ void GUI::on_input_returnPressed()
         ui->input->clear();
 
 
-        //Insercion de tabla nueva dentro arbol de tablas, deberia insertar dentro de una base de datos seleccionada
+//Insercion de tabla nueva dentro arbol de tablas, deberia insertar dentro de una base de datos seleccionada
 //        QObject *tabla1 = new QObject( tablas );
 //        tabla1->setObjectName( "Tabla #1" );
 //        ui->vistaArbol->expandAll();
@@ -201,6 +216,7 @@ void GUI::on_input_returnPressed()
     }
     else{
         QMessageBox *empty =  new QMessageBox();
+        empty->setWindowTitle("Error");
         empty->setText("Error, por favor ingrese un comando.");
         empty->show();
     }
@@ -234,6 +250,27 @@ void GUI::on_pushButton_clicked()
 //    child->setObjectName( "Kent" );
 
     ui->vistaArbol->expandAll();
+
+}
+
+void GUI::crearPalabrasReservadas()
+{
+    //Palabras reservadas del FSQL
+    listaPalabrasReservadas.append("CREATE TABLE");
+    listaPalabrasReservadas.append("SELECT");
+    listaPalabrasReservadas.append("INSERT INTO");
+    listaPalabrasReservadas.append("UPDATE");
+    listaPalabrasReservadas.append("DELETE FROM");
+    listaPalabrasReservadas.append("CREATE INDEX");
+    listaPalabrasReservadas.append("COMPRESS TABLE");
+    listaPalabrasReservadas.append("BACKUP TABLE");
+    listaPalabrasReservadas.append("RESTORE TABLE");
+
+
+    //Tipos de datos reservados
+    listaTiposReservados.append("String");
+    listaTiposReservados.append("Integer");
+    listaTiposReservados.append("Decimal");
 
 }
 
