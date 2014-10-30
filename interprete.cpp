@@ -1,4 +1,5 @@
 #include "interprete.h"
+#include <QDebug>
 
 Interprete::Interprete()
 {
@@ -28,6 +29,7 @@ bool Interprete::revisarSintaxis(string sentencia)
         return revisarCreateIndex(sentencia);
     }
     if (sentencia.find("COMPRESS TABLE")==0){
+        qDebug() << "Compress";
         return revisarCompress(sentencia);
     }
     if (sentencia.find("BACKUP TABLE")==0){
@@ -413,7 +415,7 @@ bool Interprete::revisarCreateIndex(string sentencia)//se revisa sintaxis de cre
 
 bool Interprete::revisarCompress(string sentencia)//se revisa sintaxis de compress
 {
-    if(sentencia.length()>15 && sentencia.find(" ")==14 && sentencia.find(" ",15)!=string::npos){
+    if(sentencia.length()>15 && sentencia.find(" ",9)==14 && sentencia.find(" ",15)!=string::npos){
         return true;
     }
     else{
@@ -424,7 +426,7 @@ bool Interprete::revisarCompress(string sentencia)//se revisa sintaxis de compre
 
 bool Interprete::revisarBackup(string sentencia)//se revisa sintaxis de backup
 {
-    if(sentencia.length()>13 && sentencia.find(" ")==12 && sentencia.find(" ",13)!=string::npos){
+    if(sentencia.length()>13 && sentencia.find(" ",8)==12 && sentencia.find(" ",13)!=string::npos){
         return true;
     }
     else{
@@ -435,7 +437,7 @@ bool Interprete::revisarBackup(string sentencia)//se revisa sintaxis de backup
 
 bool Interprete::revisarRestore(string sentencia)//se revisa sintaxis de restore
 {
-    if(sentencia.length()>13 && sentencia.find(" ")==12 && sentencia.find(" ",13)!=string::npos){
+    if(sentencia.length()>13 && sentencia.find(" ",8)==12 && sentencia.find(" ",13)!=string::npos){
         return true;
     }
     else{

@@ -29,7 +29,7 @@ GUI::GUI(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
-    Facade facade = new Facade();
+    facade = new Facade();
 
     //Barra de Menu
     QPixmap nuevaBasePix(":/recursos/database.png");
@@ -118,8 +118,11 @@ void GUI::on_botonEnviar_clicked()
             * if (parser(comando))
             * Luego implementar el comando grafico
            */
-
-
+        qDebug() << "aqui";
+        qDebug() << ui->input->text();
+        if(facade->revizarSintaxis(comando)){
+            qDebug() << "Fuincal";
+        }
 
         ui->output->append(ui->input->text());
         ui->input->clear();

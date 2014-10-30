@@ -7,6 +7,7 @@
 #include <QTextCursor>
 #include <QList>
 #include <QString>
+#include "facade.h"
 
 
 namespace Ui {
@@ -44,6 +45,7 @@ private:
     QTextCursor cursorOutput;
     QList<QString> listaPalabrasReservadas;
     QList<QString> listaTiposReservados;
+    Facade *facade;
 
 
 
