@@ -345,8 +345,7 @@ bool Interprete::revisarDelete(string sentencia)//se revisa sintaxis de delete
                             if (token1.find(" ")!=string::npos && token1.find(" ")!=0){
                                 token1 = token1.substr(token1.find(" ")+1,token1.length()-1);
 
-                                if(x100prexd
-                                        token1.length()>0){
+                                if(token1.length()>0){
                                     if(token1.find("OR ")==0){
                                         token1=token1.substr(3,token1.length()-3);
                                     }
