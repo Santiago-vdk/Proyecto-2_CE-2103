@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     ObjectTreeModel.cpp \
     tabla.cpp \
     nodoTabla.cpp \
-    listaTabla.cpp
+    listaTabla.cpp \
+    dato.cpp
 
 HEADERS  += \
     facade.h \
@@ -28,7 +29,8 @@ HEADERS  += \
     ObjectTreeModel.h \
     tabla.h \
     nodoTabla.h \
-    listaTabla.h
+    listaTabla.h \
+    dato.h
 
 FORMS    += \
     GUI.ui
