@@ -121,7 +121,7 @@ void GUI::on_botonEnviar_clicked()
         qDebug() << "aqui";
         qDebug() << ui->input->text();
         if(facade->revizarSintaxis(comando)){
-            qDebug() << "Fuincal";
+            qDebug() << "Funko";
         }
 
         ui->output->append(ui->input->text());
