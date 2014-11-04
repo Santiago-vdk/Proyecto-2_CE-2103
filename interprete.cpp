@@ -69,7 +69,6 @@ bool Interprete::existeColumna(string tabla, string columna)
 
 bool Interprete::nombreValido(string nombre)
 {
-    cout<<"nombrevalido"<<nombre<<endl;
     if(nombre.find(" ")==0){
         nombre = nombre.substr(1,nombre.length()-1);
     }
@@ -95,7 +94,6 @@ bool Interprete::nombreValido(string nombre)
 
 bool Interprete::datoValido(string dato)
 {
-    cout<<"datovalido"<<dato<<endl;
     if(dato.find(" ")==0){
         dato = dato.substr(1,dato.length()-1);
     }
@@ -125,13 +123,10 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                 if(sentencia.find(")") == sentencia.length()-1){
 
                     string token2=sentencia.substr(sentencia.find("(")+1,sentencia.length()-1);
-                    cout<<"token2"<<token2<<endl;
                     while(token2.find(",")!=string::npos){
-                        cout<<"token2"<<token2<<endl;
                         if(token2.find(":")!=string::npos && token2.find(":")<token2.find(",")){
                             string tokenColumna = token2.substr(0,token2.find(":"));
                             string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-token2.find(":")-1);
-                            cout<<"columna"<<tokenColumna<<" dato"<<tokenDato<<endl;
                             if(nombreValido(tokenColumna) && datoValido(tokenDato)){
                                 token2=token2.substr(token2.find(",")+1,token2.length()-1);
                             }
@@ -147,7 +142,6 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                     }
                     string tokenColumna = token2.substr(0,token2.find(":"));
                     string tokenDato = token2.substr(token2.find(":")+1,token2.length()-token2.find(":")-2);
-                    cout<<"columna"<<tokenColumna<<" dato"<<tokenDato<<endl;
                     if(nombreValido(tokenColumna) && datoValido(tokenDato)){
                         return true;
                     }
@@ -212,7 +206,6 @@ bool Interprete::revisarSelect(string sentencia)//se revisa sintaxis de select
                                             }
 
                                             else{
-                                                cout<<"ELSE"<<endl;
                                                 return false;//falta palabra reservada OR o AND
                                             }
 
@@ -345,7 +338,6 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
                 string igualaciones=token1.substr(token1.find("SET")+4,token1.find("WHERE")-token1.find("SET")-5);
 
                 while(igualaciones.length()>0){
-                    cout<<"igualaciones"<<igualaciones<<"hola"<<endl;
                     if(igualaciones.find("=")!=string::npos && igualaciones.find("=")>1){
                         if(igualaciones.find(",")!=string::npos && igualaciones.find(",")>igualaciones.find("=")+1){
                             igualaciones=igualaciones.substr(igualaciones.find(",")+1,igualaciones.length()-igualaciones.find(","));
@@ -390,7 +382,6 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
                                             }
 
                                             else{
-                                                cout<<"ELSE"<<endl;
                                                 return false;//falta palabra reservada OR o AND
                                             }
 
@@ -461,7 +452,6 @@ bool Interprete::revisarDelete(string sentencia)//se revisa sintaxis de delete
                                     }
 
                                     else{
-                                        cout<<"ELSE"<<endl;
                                         return false;//falta palabra reservada OR o AND
                                     }
 
