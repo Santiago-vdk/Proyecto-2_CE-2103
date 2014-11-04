@@ -69,10 +69,18 @@ bool Interprete::existeColumna(string tabla, string columna)
 
 bool Interprete::nombreValido(string nombre)
 {
+    cout<<"nombrevalido"<<nombre<<endl;
+    if(nombre.find(" ")==0){
+        nombre = nombre.substr(1,nombre.length()-1);
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
     if((nombre.length()>0)&&(nombre.length()<30)){
         if((nombre.find(",")==string::npos)&&(nombre.find("'")==string::npos)&&
                 (nombre.find("\"")==string::npos)&&(nombre.find(".")==string::npos)&&
-                (nombre.find(";")==string::npos)){
+                (nombre.find(";")==string::npos) &&
+                (nombre.find(":")==string::npos)){//condicion agregada
             return true;
 
         }
@@ -87,7 +95,14 @@ bool Interprete::nombreValido(string nombre)
 
 bool Interprete::datoValido(string dato)
 {
-    if(dato.compare("Integer")||dato.compare("String")||dato.compare("Decimal")){
+    cout<<"datovalido"<<dato<<endl;
+    if(dato.find(" ")==0){
+        dato = dato.substr(1,dato.length()-1);
+    }
+    if(dato.find(" ")==dato.length()-1){
+        dato = dato.substr(0,dato.length()-2);
+    }
+    if(dato.compare("Integer")==0||dato.compare("String")==0||dato.compare("Decimal")==0){
         return true;
     }
     else{
@@ -104,17 +119,19 @@ bool Interprete::datoValido(string dato)
 bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de create table
 {
     if((sentencia.find(" ",7)==12)){
-        if(sentencia.find("(")!=string::npos){
-            string token1=sentencia.substr(13,sentencia.find("(")-13);
+        if(sentencia.find("(")!=string::npos && sentencia.find("(")>13 && sentencia.find(" ",(sentencia.find(" ",7)+1))==sentencia.find("(")-1){
+            string token1=sentencia.substr(13,sentencia.find("(")-14);//con la resta obtengo los caracteres entre ambas posiciones
             if(nombreValido(token1)){
-                if((sentencia.find(")")!=string::npos) &&
-                        (sentencia.find(")") == sentencia.length()-1)){
+                if(sentencia.find(")") == sentencia.length()-1){
 
                     string token2=sentencia.substr(sentencia.find("(")+1,sentencia.length()-1);
+                    cout<<"token2"<<token2<<endl;
                     while(token2.find(",")!=string::npos){
-                        if(token2.find(":")!=string::npos){
-                            string tokenColumna = token2.substr(0,token2.find(":")-1);
-                            string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-1);
+                        cout<<"token2"<<token2<<endl;
+                        if(token2.find(":")!=string::npos && token2.find(":")<token2.find(",")){
+                            string tokenColumna = token2.substr(0,token2.find(":"));
+                            string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-token2.find(":")-1);
+                            cout<<"columna"<<tokenColumna<<" dato"<<tokenDato<<endl;
                             if(nombreValido(tokenColumna) && datoValido(tokenDato)){
                                 token2=token2.substr(token2.find(",")+1,token2.length()-1);
                             }
@@ -123,9 +140,14 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                                 return false;
                             }
                         }
+                        else{
+                            //error con : o ,
+                            return false;
+                        }
                     }
-                    string tokenColumna = token2.substr(0,token2.find(":")-1);
-                    string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-1);
+                    string tokenColumna = token2.substr(0,token2.find(":"));
+                    string tokenDato = token2.substr(token2.find(":")+1,token2.length()-token2.find(":")-2);
+                    cout<<"columna"<<tokenColumna<<" dato"<<tokenDato<<endl;
                     if(nombreValido(tokenColumna) && datoValido(tokenDato)){
                         return true;
                     }
@@ -163,76 +185,94 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
 bool Interprete::revisarSelect(string sentencia)//se revisa sintaxis de select
 {
     if((sentencia.find(" ")==6)){
-        if((sentencia.find("FROM")!=string::npos)&&(sentencia.find("FROM")!=7)&&(sentencia.length()>=15)){
-            if(sentencia.find("WHERE")!=string::npos){
-                string token1 = sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()-sentencia.find("WHERE")+5);
-                while(token1.length()>0){
-                    if(token1.find(" ")!=string::npos){
-                        string condicionIzq = token1.substr(0,token1.find(" "));
-                        token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
-                        if(condicionIzq.length()>0){
+        if((sentencia.find("FROM")!=string::npos)&&(sentencia.find("FROM")>8)&&(sentencia.length()>=15)){
+            if(sentencia.find("WHERE")!=string::npos){//validacion con WHERE
+                if(sentencia.find(" ",sentencia.find("FROM"))==sentencia.find("FROM")+4 && sentencia.find(" ",sentencia.find("FROM")+5)==sentencia.find("WHERE")-1){
+                    string token2 = sentencia.substr(sentencia.find("WHERE")+6,sentencia.length()-sentencia.find("WHERE")+5);
+                    while(token2.length()!=0){
+                        if(token2.find(" ")!=string::npos && token2.find(" ")!=0){
+                            token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
+                            if (token2.find(" ")!=string::npos && token2.find(" ")!=0){
+                                string operador=token2.substr(0,token2.find(" "));
+                                if(operador.compare("=") || operador.compare("<>") || operador.compare(">") ||
+                                        operador.compare(">=") || operador.compare("<") || operador.compare("<=")){
 
-                            if(token1.find(" ")!=string::npos){
-                                string operador = token1.substr(0,token1.find(" "));
-                                token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
-                                if(operador.compare("=") || operador.compare("<>") || operador.compare(">") || operador.compare(">=")
-                                        || operador.compare("<") || operador.compare("<=")){
+                                    if (token2.find(" ")!=string::npos){
+                                        token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
+                                        if(token2.length()>0){
+                                            if (token2.find(" ")==string::npos){
+                                                return true;//condicion con una unica comparacion
+                                            }
+                                            else if(token2.find("OR ")!=0 && token2.find("OR ")!= string::npos){
+                                                token2=token2.substr(token2.find("OR ")+3,token2.length()-token2.find("OR ")-3);
+                                            }
+                                            else if((token2.find("AND ")!=0) && (token2.find("AND ")!= string::npos)){
 
-                                    if(token1.find(" ")!=string::npos){
-                                        string condicionDer = token1.substr(0,token1.find(" "));
-                                        token1=token1.substr(token1.find(" ")+1,token1.length()-token1.find(" "));
-                                        if(condicionDer.length()>0){
-                                            if(token1.length()>0){
-                                                if(token1.find("OR ")==0){
-                                                    token1=token1.substr(3,token1.length()-3);
-                                                }
-                                                if(token1.find("AND ")==0){
-                                                    token1=token1.substr(4,token1.length()-3);
-                                                }
-                                                else{
-                                                    return false;
-                                                }
+                                                token2=token2.substr(token2.find("AND ")+4,token2.length()-token2.find("AND ")-4);//vuelve a entrar al while
+                                            }
+
+                                            else{
+                                                cout<<"ELSE"<<endl;
+                                                return false;//falta palabra reservada OR o AND
                                             }
 
                                         }
                                         else{
-                                            return false;
+                                            return false;//espacios faltantes o indebidos
                                         }
                                     }
                                     else{
-                                        return false;
+                                        return false;//operador invalido
                                     }
                                 }
                                 else{
-                                    return false;
+                                    return false;//espacios de mas o no dejo espacios
                                 }
+
                             }
                             else{
-                                return false;
+                                return false;//espacios de mas o no dejo espacios
                             }
+
                         }
                         else{
-                            return false;
+                            return false;//errores en las comparaciones
                         }
                     }
+                }
+                else{
+                    return false;
+                }
+            }
+            else{//validacion sin WHERE
+                if(sentencia.find(" ",sentencia.find("FROM"))== sentencia.find("FROM")+4){
+                    string token1 = sentencia.substr(sentencia.find(" ",sentencia.find("FROM"))+1,
+                                                     sentencia.length()-sentencia.find(" ",sentencia.find("FROM")));
+
+                    if(token1.find(" ")==string::npos){
+                        return true;
+                    }
                     else{
+                        //sobran espacios
                         return false;
                     }
                 }
-                return true;//validacion con WHERE
+
+                else{
+                    //faltan espacios
+                    return false;
+                }
             }
-            else{
-                return true;//validacion sin WHERE
-            }
+
         }
         else{
             return false;
         }
+
     }
     else{
         return false;
     }
-
 
 }
 
@@ -253,7 +293,6 @@ bool Interprete::revisarInsert(string sentencia)//se revisa sintaxis de insert
 
                                 cout<<"token1"<<token1<<"token2"<<token2<<endl;
                                 while(token1.find(",")!=string::npos && token2.find(",")!=string::npos){
-                                    qDebug()<<"hola";
                                     token1 = token1.substr(token1.find(",")+1, token1.length()-token1.find(","));
                                     token2 = token2.substr(token2.find(",")+1, token1.length()-token2.find(","));
                                 }
