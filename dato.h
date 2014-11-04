@@ -6,7 +6,7 @@ using namespace std;
 class Dato
 {
 public:
-    Dato(dato,tipoDato);
+    Dato(string dato,string tipoDato);
     string getDato();
     string getTipoDato();
 
