@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     tabla.cpp \
     nodoTabla.cpp \
     listaTabla.cpp \
-    dato.cpp
+    dato.cpp \
+    compress.cpp
 
 HEADERS  += \
     facade.h \
@@ -30,7 +31,9 @@ HEADERS  += \
     tabla.h \
     nodoTabla.h \
     listaTabla.h \
-    dato.h
+    dato.h \
+    ../../../../../Users/David/Desktop/compress.h \
+    compress.h
 
 FORMS    += \
     GUI.ui
