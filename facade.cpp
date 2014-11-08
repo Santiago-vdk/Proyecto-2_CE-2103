@@ -4,21 +4,19 @@
 Facade::Facade()
 {
 
-    sis = new sistemaArchivos();
+
+    _interprete = new Interprete();
 
 }
 
 bool Facade::revizarSintaxis(string sentencia)
 {
-    return _interprete.revisarSintaxis(sentencia);
+    return _interprete->revisarSintaxis(sentencia);
 }
 
 bool Facade::ejecutar(string sentencia)
 {
-    return _interprete.ejecutar(sentencia);
+    return _interprete->ejecutar(sentencia);
 }
 
-void Facade::crearArchivo(string pNombre)
-{
-    sis->crearNuevaTabla(pNombre);
-}
+

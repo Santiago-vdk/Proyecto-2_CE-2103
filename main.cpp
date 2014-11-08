@@ -1,6 +1,5 @@
 #include "GUI.h"
 #include <QApplication>
-#include "string"
 #include "iostream"
 using namespace std;
 
