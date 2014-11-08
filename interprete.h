@@ -1,6 +1,7 @@
 #ifndef INTERPRETE_H
 #define INTERPRETE_H
 #include <string>
+#include "sistemaArchivos.h"
 using namespace std;
 
 class Interprete
@@ -40,6 +41,7 @@ private:
 
     int cargaTablas();
     bool has_suffix(const string& s, const string& suffix);
+    sistemaArchivos *sis;
 
 
 };

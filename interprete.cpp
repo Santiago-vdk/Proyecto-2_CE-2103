@@ -7,6 +7,7 @@ using namespace std;
 Interprete::Interprete()
 {
     cargaTablas();
+    sis = new sistemaArchivos();
 }
 
 bool Interprete::revisarSintaxis(string sentencia)

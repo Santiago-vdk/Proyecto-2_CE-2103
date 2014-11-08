@@ -13,15 +13,6 @@ public:
     bool revizarSintaxis(string sentencia);//   estos metodos podrian devolver strings con
     bool ejecutar(string sentencia);//  errores mas directos para los msjs de error visuales
     Interprete * _interprete;
-
-
-
-
-    sistemaArchivos *sis;
-    void crearArchivo(string pNombre);
-
-
-
 };
 
 #endif // FACADE_H

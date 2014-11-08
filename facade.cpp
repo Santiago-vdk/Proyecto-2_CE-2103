@@ -4,7 +4,7 @@
 Facade::Facade()
 {
 
-    sis = new sistemaArchivos();
+
     _interprete = new Interprete();
 
 }
@@ -19,7 +19,4 @@ bool Facade::ejecutar(string sentencia)
     return _interprete->ejecutar(sentencia);
 }
 
-void Facade::crearArchivo(string pNombre)
-{
-    sis->crearNuevaTabla(pNombre);
-}
+
