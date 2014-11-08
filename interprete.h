@@ -37,6 +37,11 @@ private:
     bool ejecutarCompress(string sentencia);
     bool ejecutarBackup(string sentencia);
     bool ejecutarRestore(string sentencia);
+
+    int cargaTablas();
+    bool has_suffix(const string& s, const string& suffix);
+
+
 };
 
 #endif // INTERPRETE_H

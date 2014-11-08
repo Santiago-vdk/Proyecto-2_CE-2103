@@ -30,7 +30,6 @@ bool sistemaArchivos::crearNuevaTabla(string pNombre)
             caso = 1;
             break;
         }
-
     }
     switch(caso){
     case 1:
@@ -40,6 +39,7 @@ bool sistemaArchivos::crearNuevaTabla(string pNombre)
         if (archivo.openFile(truncate)){
             archivo.closeFile();
         }
+        
     }
     case 2:
     {

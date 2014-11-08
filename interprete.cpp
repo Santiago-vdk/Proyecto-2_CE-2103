@@ -1,11 +1,12 @@
 #include "interprete.h"
 #include <QDebug>
 #include "iostream"
+#include <dirent.h>
 using namespace std;
 
 Interprete::Interprete()
 {
-
+    cargaTablas();
 }
 
 bool Interprete::revisarSintaxis(string sentencia)
@@ -335,69 +336,64 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
         string token1 = sentencia.substr(7,sentencia.length()-7);
         if(token1.find("SET")!= string::npos && token1.find("SET")>0){
 
-                string igualaciones=token1.substr(token1.find("SET")+4,token1.find("WHERE")-token1.find("SET")-5);
+            string igualaciones=token1.substr(token1.find("SET")+4,token1.find("WHERE")-token1.find("SET")-5);
 
-                while(igualaciones.length()>0){
-                    if(igualaciones.find("=")!=string::npos && igualaciones.find("=")>1){
-                        if(igualaciones.find(",")!=string::npos && igualaciones.find(",")>igualaciones.find("=")+1){
-                            igualaciones=igualaciones.substr(igualaciones.find(",")+1,igualaciones.length()-igualaciones.find(","));
-                            if(igualaciones.find(" ")==0){
-                                igualaciones=igualaciones.substr(1,igualaciones.length()-1);
-                            }
+            while(igualaciones.length()>0){
+                if(igualaciones.find("=")!=string::npos && igualaciones.find("=")>1){
+                    if(igualaciones.find(",")!=string::npos && igualaciones.find(",")>igualaciones.find("=")+1){
+                        igualaciones=igualaciones.substr(igualaciones.find(",")+1,igualaciones.length()-igualaciones.find(","));
+                        if(igualaciones.find(" ")==0){
+                            igualaciones=igualaciones.substr(1,igualaciones.length()-1);
                         }
-                        else if(igualaciones.find(" ",igualaciones.find("=")+2)!=string::npos){
-                            return false;//error espacios de mas
-                        }
-                        else{
-                            igualaciones="";//lo saca del while
-                        }
+                    }
+                    else if(igualaciones.find(" ",igualaciones.find("=")+2)!=string::npos){
+                        return false;//error espacios de mas
                     }
                     else{
-                        return false;// falta signo =
+                        igualaciones="";//lo saca del while
                     }
                 }
-                if(token1.find("WHERE")!= string::npos){
+                else{
+                    return false;// falta signo =
+                }
+            }
+            if(token1.find("WHERE")!= string::npos){
 
-                    string token2=token1.substr(token1.find("WHERE")+6,token1.length()-token1.find("WHERE")-6);
-                    while(token2.length()!=0){
-                        if(token2.find(" ")!=string::npos && token2.find(" ")!=0){
-                            token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
-                            if (token2.find(" ")!=string::npos && token2.find(" ")!=0){
-                                string operador=token2.substr(0,token2.find(" "));
-                                if(operador.compare("=") || operador.compare("<>") || operador.compare(">") ||
-                                        operador.compare(">=") || operador.compare("<") || operador.compare("<=")){
+                string token2=token1.substr(token1.find("WHERE")+6,token1.length()-token1.find("WHERE")-6);
+                while(token2.length()!=0){
+                    if(token2.find(" ")!=string::npos && token2.find(" ")!=0){
+                        token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
+                        if (token2.find(" ")!=string::npos && token2.find(" ")!=0){
+                            string operador=token2.substr(0,token2.find(" "));
+                            if(operador.compare("=") || operador.compare("<>") || operador.compare(">") ||
+                                    operador.compare(">=") || operador.compare("<") || operador.compare("<=")){
 
-                                    if (token2.find(" ")!=string::npos){
-                                        token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
-                                        if(token2.length()>0){
-                                            if (token2.find(" ")==string::npos){
-                                                return true;//condicion con una unica comparacion
-                                            }
-                                            else if(token2.find("OR ")!=0 && token2.find("OR ")!= string::npos){
-                                                token2=token2.substr(token2.find("OR ")+3,token2.length()-token2.find("OR ")-3);
-                                            }
-                                            else if((token2.find("AND ")!=0) && (token2.find("AND ")!= string::npos)){
-
-                                                token2=token2.substr(token2.find("AND ")+4,token2.length()-token2.find("AND ")-4);//vuelve a entrar al while
-                                            }
-
-                                            else{
-                                                return false;//falta palabra reservada OR o AND
-                                            }
-
+                                if (token2.find(" ")!=string::npos){
+                                    token2 = token2.substr(token2.find(" ")+1,token2.length()-1);
+                                    if(token2.length()>0){
+                                        if (token2.find(" ")==string::npos){
+                                            return true;//condicion con una unica comparacion
                                         }
+                                        else if(token2.find("OR ")!=0 && token2.find("OR ")!= string::npos){
+                                            token2=token2.substr(token2.find("OR ")+3,token2.length()-token2.find("OR ")-3);
+                                        }
+                                        else if((token2.find("AND ")!=0) && (token2.find("AND ")!= string::npos)){
+
+                                            token2=token2.substr(token2.find("AND ")+4,token2.length()-token2.find("AND ")-4);//vuelve a entrar al while
+                                        }
+
                                         else{
-                                            return false;//espacios faltantes o indebidos
+                                            return false;//falta palabra reservada OR o AND
                                         }
+
                                     }
                                     else{
-                                        return false;//operador invalido
+                                        return false;//espacios faltantes o indebidos
                                     }
                                 }
                                 else{
-                                    return false;//espacios de mas o no dejo espacios
+                                    return false;//operador invalido
                                 }
-
                             }
                             else{
                                 return false;//espacios de mas o no dejo espacios
@@ -405,11 +401,16 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
 
                         }
                         else{
-                            return false;//errores en las comparaciones
+                            return false;//espacios de mas o no dejo espacios
                         }
-                    }
 
+                    }
+                    else{
+                        return false;//errores en las comparaciones
+                    }
                 }
+
+            }
             else{
                 return true;//caso sin WHERE
             }
@@ -607,3 +608,31 @@ bool Interprete::ejecutarRestore(string sentencia)
     //se ejecuta restore
     return true;
 }
+
+/*------------------------------------------------------------------------------*/
+
+int Interprete::cargaTablas()
+{
+    string path = "./";
+
+    DIR *dir = opendir(path.c_str());
+    if(!dir)
+    {
+        return 1;
+    }
+    dirent *entry;
+    while(entry = readdir(dir))
+    {
+        if(has_suffix(entry->d_name, ".snar"))
+        {
+            cout << entry->d_name << endl;
+        }
+    }
+    closedir(dir);
+}
+
+bool Interprete::has_suffix(const string &s, const string &suffix)
+{
+    return (s.size() >= suffix.size()) && equal(suffix.rbegin(), suffix.rend(), s.rbegin());
+}
+/*------------------------------------------------------------------------------*/
