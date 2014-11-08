@@ -1,7 +1,11 @@
 #include "facade.h"
+#include "sistemaArchivos.h"
 
 Facade::Facade()
 {
+
+    sis = new sistemaArchivos();
+
 }
 
 bool Facade::revizarSintaxis(string sentencia)
@@ -12,4 +16,9 @@ bool Facade::revizarSintaxis(string sentencia)
 bool Facade::ejecutar(string sentencia)
 {
     return _interprete.ejecutar(sentencia);
+}
+
+void Facade::crearArchivo(string pNombre)
+{
+    sis->crearNuevaTabla(pNombre);
 }

@@ -20,8 +20,13 @@ SOURCES += main.cpp\
     tabla.cpp \
     nodoTabla.cpp \
     listaTabla.cpp \
-    dato.cpp \
-    compress.cpp
+    compress.cpp \
+    metaDato.cpp \
+    NodoMetaDato.cpp \
+    ListaMetaDato.cpp \
+    ArchivoAleatorio.cpp \
+    Registro.cpp \
+    sistemaArchivos.cpp
 
 HEADERS  += \
     facade.h \
@@ -31,9 +36,14 @@ HEADERS  += \
     tabla.h \
     nodoTabla.h \
     listaTabla.h \
-    dato.h \
     ../../../../../Users/David/Desktop/compress.h \
-    compress.h
+    compress.h \
+    metaDato.h \
+    NodoMetaDato.h \
+    ListaMetaDato.h \
+    ArchivoAleatorio.h \
+    Registro.h \
+    sistemaArchivos.h
 
 FORMS    += \
     GUI.ui
