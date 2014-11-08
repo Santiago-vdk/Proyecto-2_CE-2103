@@ -26,7 +26,10 @@ SOURCES += main.cpp\
     ListaMetaDato.cpp \
     ArchivoAleatorio.cpp \
     Registro.cpp \
-    sistemaArchivos.cpp
+    sistemaArchivos.cpp \
+    NodoDato.cpp \
+    MatrizDato.cpp \
+    ListaDato.cpp
 
 HEADERS  += \
     facade.h \
@@ -43,7 +46,10 @@ HEADERS  += \
     ListaMetaDato.h \
     ArchivoAleatorio.h \
     Registro.h \
-    sistemaArchivos.h
+    sistemaArchivos.h \
+    NodoDato.h \
+    MatrizDato.h \
+    ListaDato.h
 
 FORMS    += \
     GUI.ui
