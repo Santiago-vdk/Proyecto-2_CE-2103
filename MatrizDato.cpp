@@ -39,9 +39,11 @@ ListaDato *MatrizDato::buscarListaEnPos(int ppos)
 {
     if(ppos<_tamanio){
 
+        ListaDato *tmp = _head;
         for(int i = 0; i<ppos;i++){
-
+            tmp = tmp->getNext();
         }
+        return tmp;
     }
     else{
         return NULL;
