@@ -122,6 +122,7 @@ void GUI::on_botonEnviar_clicked()
         qDebug() << ui->input->text();
         if(facade->revizarSintaxis(comando)){
             qDebug() << "Funko";
+            facade->ejecutar(comando);
         }
 
         ui->output->append(ui->input->text());

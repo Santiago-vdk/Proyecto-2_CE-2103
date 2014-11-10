@@ -37,7 +37,6 @@ bool Interprete::revisarSintaxis(string sentencia)
         return revisarCreateIndex(sentencia);
     }
     if (sentencia.find("COMPRESS TABLE")==0){
-        qDebug() << "Compress";
         return revisarCompress(sentencia);
     }
     if (sentencia.find("BACKUP TABLE")==0){
@@ -56,14 +55,49 @@ bool Interprete::ejecutar(string sentencia)
 {
     //es bool ya que retorna true si se ejecuto correctamente la sentencia y false si
     //ocurrio un error, ej: la tabla o columna no existe
-    return true;
+    if (sentencia.find("CREATE TABLE")==0){
+        return ejecutarCreateTable(sentencia);
+    }
+    if (sentencia.find("SELECT")==0){
+        return ejecutarSelect(sentencia);
+    }
+    if (sentencia.find("INSERT INTO")==0){
+        return ejecutarInsert(sentencia);
+    }
+    if (sentencia.find("UPDATE")==0){
+        return ejecutarUpdate(sentencia);
+    }
+    if (sentencia.find("DELETE FROM")==0){
+        return ejecutarDelete(sentencia);
+    }
+    if (sentencia.find("CREATE INDEX ON")==0){
+        return ejecutarCreateIndex(sentencia);
+    }
+    if (sentencia.find("COMPRESS TABLE")==0){
+        return ejecutarCompress(sentencia);
+    }
+    if (sentencia.find("BACKUP TABLE")==0){
+        return ejecutarBackup(sentencia);
+    }
+    if (sentencia.find("RESTORE TABLE")==0){
+        return ejecutarRestore(sentencia);
+    }
+    else{
+        //nunca deberia entrar aqui si las funciones revisar funcionar correctamente
+        return false;
+    }
 }
 
-bool Interprete::existeTabla(string tabla)
+bool Interprete::existeTabla(string ptabla)
 {
-    //creo que aqui se utiliza un try/catch para que el programa no se caiga si no
-    //encuentra la tabla
-    return true;
+
+    for(int i = 0;i<_listaTablas->getTamanio();i++){
+        tabla *tmp = _listaTablas->buscarTablaEnPos(i);
+        if(ptabla.compare(tmp->getNombre())==0){
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Interprete::existeColumna(string tabla, string columna)
@@ -560,10 +594,65 @@ bool Interprete::revisarRestore(string sentencia)//se revisa sintaxis de restore
 
 
 
-bool Interprete::ejecutarCreateTable(string sentencia)
+bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
 {
-    //se ejecuta create table
-    return true;
+    string nombre = sentencia.substr(13,sentencia.find("(")-13);
+    if(nombre.find(" ")==0){
+        nombre=nombre.substr(1,nombre.length()-1);
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-1);
+    }
+    if(existeTabla(nombre)){
+        //error ya existe tabla con ese nombre
+        cout<<"ya existe la tabla"<<endl;
+    }
+    else{
+        _listaTablas->insertarFinal(nombre,"base de datos");
+        sentencia = sentencia.substr(sentencia.find("(")+1,sentencia.length() - sentencia.find("("));
+        while(sentencia.find(",")!=string::npos){
+            string columna = sentencia.substr(0,sentencia.find(":"));
+            //los if eliminan un espacio al inicio o al final en caso de que se encuentre alguno
+            if(columna.find(" ")==0){
+                columna=columna.substr(1,columna.length()-1);
+            }
+            if(columna.find(" ")==columna.length()-1){
+                columna= columna.substr(0,columna.length()-2);
+            }
+            //
+            string tipoDato = sentencia.substr(sentencia.find(":")+1,sentencia.find(",")-sentencia.find(":")-1);
+            //
+            if(tipoDato.find(" ")==0){
+                tipoDato=tipoDato.substr(1,tipoDato.length()-1);
+            }
+            if(tipoDato.find(" ")==tipoDato.length()-1){
+                tipoDato= tipoDato.substr(0,tipoDato.length()-2);
+            }
+            //
+            _listaTablas->getTail()->getTabla()->agregarMetaDatos(columna,tipoDato);
+            sentencia = sentencia.substr(sentencia.find(",")+1,sentencia.length() - sentencia.find(",")-1);
+
+        }
+        string columna = sentencia.substr(0,sentencia.find(":"));
+        string tipoDato = sentencia.substr(sentencia.find(":")+1,sentencia.find(")")-sentencia.find(":")-1);
+
+        if(columna.find(" ")==0){
+            columna=columna.substr(1,columna.length()-1);
+        }
+        if(columna.find(" ")==columna.length()-1){
+            columna= columna.substr(0,columna.length()-2);
+        }
+        if(tipoDato.find(" ")==0){
+            tipoDato=tipoDato.substr(1,tipoDato.length()-1);
+        }
+        if(tipoDato.find(" ")==tipoDato.length()-1){
+            tipoDato= tipoDato.substr(0,tipoDato.length()-2);
+        }
+
+        _listaTablas->getTail()->getTabla()->agregarMetaDatos(columna,tipoDato);
+        _listaTablas->imprimirTablas();
+
+    }
 }
 
 bool Interprete::ejecutarSelect(string sentencia)

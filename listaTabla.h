@@ -22,6 +22,8 @@ public:
     void setPrev(listaTabla *pPrev);
 
     void insertarFinal(string pNombre, string pNombreBase);
+    tabla *buscarTablaEnPos(int i);
+    void imprimirTablas();
 
 
 

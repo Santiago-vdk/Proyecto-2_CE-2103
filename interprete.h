@@ -15,7 +15,7 @@ public:
 
 private:
 
-    bool existeTabla(string tabla);
+    bool existeTabla(string ptabla);
     bool existeColumna(string tabla,string columna);
     bool nombreValido(string nombre);
     bool datoValido(string dato);

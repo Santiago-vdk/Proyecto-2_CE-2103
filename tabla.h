@@ -17,9 +17,9 @@ public:
     void agregarMetaDatos(string pNombre, string pTipoDato);
     ListaMetaDato *getListaMetaDato();
     MatrizDato * getMatrizDato();
-    void insertarRegistro(ListaDato pRegistro);
+    void insertarRegistro(ListaDato *pRegistro);
     void setMetaDato(string pMetaDato);
-    ListaMetaDato getMetaDato();
+    ListaMetaDato *getMetaDato();
 
 
 

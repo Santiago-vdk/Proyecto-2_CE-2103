@@ -178,6 +178,9 @@ TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i){
         registroAux.read(file);
         j++;
     }
+    if(file.eof()){
+        cout<<"fin archivo"<<endl;
+    }
     return registroAux;
 
 

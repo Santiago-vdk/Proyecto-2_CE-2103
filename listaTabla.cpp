@@ -1,6 +1,7 @@
 #include "listaTabla.h"
 #include <QDebug>
-
+#include "iostream"
+using namespace std;
 listaTabla::listaTabla()
 {
     _tamanio=0;
@@ -28,6 +29,34 @@ void listaTabla::insertarFinal(string pNombre, string pNombreBase)
         _tail = tmp;
     }
     _tamanio++;
+}
+
+tabla *listaTabla::buscarTablaEnPos(int i)
+{
+    nodoTabla *tmp = _head;
+    if(i<_tamanio){
+        for(int j =0; j<i;j++){
+            tmp = tmp->getTablaNext();
+        }
+        return tmp->getTabla();
+    }
+    else{
+        return NULL;
+    }
+}
+
+void listaTabla::imprimirTablas()
+{
+    nodoTabla *tmp = _head;
+    for(int i =0;i<_tamanio;i++){
+
+        cout<<"tabla: "<<tmp->getTabla()->getNombre()<<endl;
+        for(int j=0;j<tmp->getTabla()->getMetaDato()->getTamanio();j++){
+            cout<<"MetaDato: "<<tmp->getTabla()->getMetaDato()->buscarPosicion(j)->getmetaDato()
+               <<" Tipo: "<<tmp->getTabla()->getMetaDato()->buscarPosicion(j)->getTipometaDato()
+               <<endl;
+        }
+    }
 }
 
 
