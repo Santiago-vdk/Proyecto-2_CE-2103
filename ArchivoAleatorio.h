@@ -44,6 +44,12 @@ public:
     bool seek(TIPOREGISTRO &);
     bool seek(long);
     long getRecord(TIPOREGISTRO &);
+
+
+
+    TIPOREGISTRO getFirstRecord();
+    TIPOREGISTRO getRecordInPos(int i);
+
     bool reset();
     bool gotoEnd();
     bool gotoRecord(long);
@@ -148,6 +154,41 @@ long ArchivoAleatorio<TIPOREGISTRO>::getRecord(TIPOREGISTRO & registro){
     seek(posActual);
     return (encontrado ? posRegistro : -1);
 }
+
+
+/*--------------------------------------------------------------*/
+
+template <class TIPOREGISTRO>
+TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getFirstRecord(){
+    TIPOREGISTRO registroAux;
+    file.clear();
+    reset();
+    registroAux.read(file);
+    return registroAux;
+}
+
+
+template <class TIPOREGISTRO>
+TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i){
+    TIPOREGISTRO registroAux;
+    file.clear();
+    reset();
+    int j = 0;
+    while ((j < i)    && !file.eof()){
+        registroAux.read(file);
+        j++;
+    }
+    return registroAux;
+
+
+
+
+}
+
+/*--------------------------------------------------------------*/
+
+
+
 
 template <class TIPOREGISTRO>
 bool ArchivoAleatorio<TIPOREGISTRO>::seek(TIPOREGISTRO & registro){

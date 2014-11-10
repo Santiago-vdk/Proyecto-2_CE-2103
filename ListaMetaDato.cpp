@@ -24,9 +24,11 @@ NodoMetaDato ListaMetaDato::getTail()
     return *_tail;
 }
 
-void ListaMetaDato::insertarFinal(metaDato *pDato)
+void ListaMetaDato::insertarFinal(string pNombre, string pTipo)
 {
-    NodoMetaDato *tmp = new NodoMetaDato(pDato);
+
+    metaDato *metaTmp = new metaDato(pNombre,pTipo);
+    NodoMetaDato *tmp = new NodoMetaDato(metaTmp);
     if(_head == NULL){
         _head = tmp;
         _tail = tmp;

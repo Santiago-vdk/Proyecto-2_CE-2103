@@ -2,6 +2,7 @@
 #define INTERPRETE_H
 #include <string>
 #include "sistemaArchivos.h"
+#include "listaTabla.h"
 using namespace std;
 
 class Interprete
@@ -42,6 +43,9 @@ private:
     int cargaTablas();
     bool has_suffix(const string& s, const string& suffix);
     sistemaArchivos *sis;
+    void generarTabla(string pName);
+
+    listaTabla * _listaTablas;
 
 
 };

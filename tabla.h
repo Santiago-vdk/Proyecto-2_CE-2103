@@ -3,7 +3,8 @@
 
 #include <string>
 #include "ListaMetaDato.h"
-
+#include "MatrizDato.h"
+#include "ListaDato.h"
 
 using namespace std;
 class tabla
@@ -15,12 +16,18 @@ public:
     string getNombreBasedeDatos();
     void agregarMetaDatos(string pNombre, string pTipoDato);
     ListaMetaDato *getListaMetaDato();
+    MatrizDato * getMatrizDato();
+    void insertarRegistro(ListaDato pRegistro);
+    void setMetaDato(string pMetaDato);
+    ListaMetaDato getMetaDato();
+
 
 
 private:
     string _Nombre;
     string _NombreBasedeDatos;
     ListaMetaDato *_metaDato;
+    MatrizDato *_matrizDato;
 
 
 

@@ -21,7 +21,8 @@ public:
     void setNext(listaTabla *pNext);
     void setPrev(listaTabla *pPrev);
 
-    void insertarFinal(tabla *nodo);
+    void insertarFinal(string pNombre, string pNombreBase);
+
 
 
 private:

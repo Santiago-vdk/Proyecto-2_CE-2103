@@ -15,9 +15,10 @@ listaTabla::~listaTabla()
     }
 }
 
-void listaTabla::insertarFinal(tabla *nodo)
+void listaTabla::insertarFinal(string pNombre, string pNombreBase)
 {
-    nodoTabla *tmp = new nodoTabla(nodo);
+    tabla * tempDato = new tabla(pNombre,pNombreBase);
+    nodoTabla *tmp = new nodoTabla(tempDato);
     if(_head == NULL){
         _head = _tail = tmp;
     }
@@ -28,6 +29,7 @@ void listaTabla::insertarFinal(tabla *nodo)
     }
     _tamanio++;
 }
+
 
 nodoTabla *listaTabla::getHead()
 {

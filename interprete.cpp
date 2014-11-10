@@ -2,12 +2,16 @@
 #include <QDebug>
 #include "iostream"
 #include <dirent.h>
+#include "nodoTabla.h"
+#include "tabla.h"
 using namespace std;
 
 Interprete::Interprete()
 {
     cargaTablas();
     sis = new sistemaArchivos();
+    _listaTablas = new listaTabla();
+
 }
 
 bool Interprete::revisarSintaxis(string sentencia)
@@ -627,6 +631,10 @@ int Interprete::cargaTablas()
         if(has_suffix(entry->d_name, ".snar"))
         {
             cout << entry->d_name << endl;
+
+            generarTabla(entry->d_name);
+
+
         }
     }
     closedir(dir);
@@ -635,5 +643,16 @@ int Interprete::cargaTablas()
 bool Interprete::has_suffix(const string &s, const string &suffix)
 {
     return (s.size() >= suffix.size()) && equal(suffix.rbegin(), suffix.rend(), s.rbegin());
+}
+
+void Interprete::generarTabla(string pName)
+{
+
+    ArchivoAleatorio<Registro> archivo(pName);
+    if (archivo.openFile(truncate)){ //si se puede abrir el archivo
+        _listaTablas->insertarFinal(pName,"BaseDatos");
+        _listaTablas->getTail()->getTabla()->setMetaDato(archivo.getFirstRecord().getDato());
+    }
+
 }
 /*------------------------------------------------------------------------------*/

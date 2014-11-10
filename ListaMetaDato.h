@@ -11,7 +11,7 @@ public:
     NodoMetaDato getHead();
     NodoMetaDato getTail();
 
-    void insertarFinal(metaDato *pDato);
+    void insertarFinal(string pNombre, string pTipo);
     metaDato *buscarPosicion(int pPos);
 
 
