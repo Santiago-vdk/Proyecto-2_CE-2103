@@ -12,6 +12,7 @@ public:
 
     void insertarFinal(ListaDato * plista);
     ListaDato *buscarListaEnPos(int ppos);
+    string buscarDatoEnPos(int i,int j);
 
 private:
     int _tamanio;

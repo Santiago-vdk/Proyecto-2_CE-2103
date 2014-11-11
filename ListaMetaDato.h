@@ -13,6 +13,8 @@ public:
 
     void insertarFinal(string pNombre, string pTipo);
     metaDato *buscarPosicion(int pPos);
+    string listaMetaDatoToString();
+    int PosMetaDato(string pmetaDato);
 
 
 

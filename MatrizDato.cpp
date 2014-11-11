@@ -49,3 +49,21 @@ ListaDato *MatrizDato::buscarListaEnPos(int ppos)
         return NULL;
     }
 }
+
+string MatrizDato::buscarDatoEnPos(int i, int j)
+{
+    if(i<_tamanio && j<_head->getTamanio()){
+        ListaDato *tmp = _head;
+        for(int a=0; a< i;a++){
+            tmp = tmp->getNext();
+        }
+        NodoDato *tmp2 = tmp->getHead();
+        for(int b=0; b< j;b++){
+            tmp2 = tmp2->getNext();
+        }
+        return tmp2->getDato();
+    }
+    else{
+        return NULL;
+    }
+}

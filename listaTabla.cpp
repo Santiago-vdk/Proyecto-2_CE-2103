@@ -45,18 +45,33 @@ tabla *listaTabla::buscarTablaEnPos(int i)
     }
 }
 
+tabla *listaTabla::buscarTabla(string pnombre)
+{
+    nodoTabla *tmp = _head;
+    while(tmp!=NULL && tmp->getTabla()->getNombre().compare(pnombre)!=0){
+        tmp = tmp->getTablaNext();
+    }
+    return tmp->getTabla();
+}
+
 void listaTabla::imprimirTablas()
 {
     nodoTabla *tmp = _head;
     for(int i =0;i<_tamanio;i++){
+        tmp->getTabla()->imprimirTabla();
+        tmp = tmp->getTablaNext();
+    }
+}
 
-        cout<<"tabla: "<<tmp->getTabla()->getNombre()<<endl;
-        for(int j=0;j<tmp->getTabla()->getMetaDato()->getTamanio();j++){
-            cout<<"MetaDato: "<<tmp->getTabla()->getMetaDato()->buscarPosicion(j)->getmetaDato()
-               <<" Tipo: "<<tmp->getTabla()->getMetaDato()->buscarPosicion(j)->getTipometaDato()
-               <<endl;
+bool listaTabla::existeTabla(string pnombre)
+{
+    nodoTabla *tmp = _head;
+    for(int i = 0; i<_tamanio;i++){
+        if (tmp->getTabla()->getNombre().compare(pnombre)==0){
+            return true;
         }
     }
+    return false;
 }
 
 

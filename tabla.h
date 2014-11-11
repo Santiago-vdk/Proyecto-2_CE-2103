@@ -20,6 +20,9 @@ public:
     void insertarRegistro(ListaDato *pRegistro);
     void setMetaDato(string pMetaDato);
     ListaMetaDato *getMetaDato();
+    void imprimirTabla();
+    bool existeMetaDato(string pmetaDato);
+    bool existeListaMetaDato(string plistaMetaDato);
 
 
 

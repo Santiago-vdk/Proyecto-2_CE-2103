@@ -19,6 +19,7 @@ private:
     bool existeColumna(string tabla,string columna);
     bool nombreValido(string nombre);
     bool datoValido(string dato);
+    int cumpleWhere(tabla *ptabla, string pcondiciones, int ppos);
 
     bool revisarCreateTable(string sentencia);
     bool revisarSelect(string sentencia);

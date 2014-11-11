@@ -57,3 +57,26 @@ metaDato *ListaMetaDato::buscarPosicion(int pPos)
         cout<<"busqueda out of range"<<endl;
     }
 }
+
+string ListaMetaDato::listaMetaDatoToString()
+{
+    string tmp ="";
+    NodoMetaDato *nodoTmp = _head;
+    for(int i = 0; i<_tamanio;i++){
+            tmp.append(nodoTmp->getDato()->getmetaDato());
+            tmp.append(",");
+    }
+    tmp = tmp.substr(0,tmp.length()-2);//elimina la ultima coma
+    return tmp;
+}
+
+int ListaMetaDato::PosMetaDato(string pmetaDato)
+{
+    NodoMetaDato *tmp = _head;
+    int i=0;
+    while(tmp->getDato()->getmetaDato().compare(pmetaDato)!=0){
+        i++;
+        tmp = tmp->getNext();
+    }
+    return i;
+}

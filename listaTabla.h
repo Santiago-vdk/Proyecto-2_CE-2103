@@ -23,7 +23,9 @@ public:
 
     void insertarFinal(string pNombre, string pNombreBase);
     tabla *buscarTablaEnPos(int i);
+    tabla *buscarTabla(string pnombre);
     void imprimirTablas();
+    bool existeTabla(string pnombre);
 
 
 

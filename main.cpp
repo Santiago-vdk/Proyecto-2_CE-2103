@@ -7,7 +7,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    GUI w;
-    w.show();
+    QString test(" saasdfasf");
+    test.toInt();
+   // GUI w;
+   // w.show();
     return a.exec();
 }

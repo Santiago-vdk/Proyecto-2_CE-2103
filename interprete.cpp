@@ -148,6 +148,323 @@ bool Interprete::datoValido(string dato)
     }
 }
 
+int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
+{
+    string AndOr = "";
+    int condicionAnterior = -1;
+    while(pcondiciones.find("AND")!=string::npos || pcondiciones.find("OR")!=string::npos){
+
+        string token1="";
+        if(condicionAnterior == -1){
+            if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                token1 = pcondiciones.substr(0,pcondiciones.find("AND")-1);
+                if(token1.find(" ")==0){
+                    token1=token1.substr(1,token1.length());
+                }
+                if(token1.find(" ")==token1.length()-1){
+                    token1=token1.substr(0,token1.length()-2);
+                }
+            }
+            if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                token1 = pcondiciones.substr(0,pcondiciones.find("OR")-1);
+                if(token1.find(" ")==0){
+                    token1=token1.substr(1,token1.length());
+                }
+                if(token1.find(" ")==token1.length()-1){
+                    token1=token1.substr(0,token1.length()-2);
+                }
+            }
+
+
+            if(token1.find("<>")!= string::npos){
+                string campo=token1.substr(0,token1.find("<>")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find("<>")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                        condicionAnterior=1;
+                    }
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                        condicionAnterior=0;
+                    }
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+            else if(token1.find(">=")!= string::npos){
+                string campo=token1.substr(0,token1.find(">=")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find(">=")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
+                        bool *ok;
+                        QString test = QString::fromStdString(campo);
+                        test.toInt(ok,10);
+
+                        if(ok){
+                            //revisar a la hora de la insercion si se puede castear a int
+                        }
+                        else{
+                            return false;//error al castear a int
+                        }
+                    }
+                    else{
+                        return false;//error operando incompatible
+                    }
+
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+            else if(token1.find("<=")!= string::npos){
+                string campo=token1.substr(0,token1.find("<=")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find("<=")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
+                        bool *ok;
+                        QString test = QString::fromStdString(campo);
+                        test.toInt(ok,10);
+
+                        if(ok){
+                            //revisar a la hora de la insercion si se puede castear a int
+                        }
+                        else{
+                            return false;//error al castear a int
+                        }
+                    }
+                    else{
+                        return false;//error operando incompatible
+                    }
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+            else if(token1.find(">")!= string::npos){
+                string campo=token1.substr(0,token1.find(">")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find(">")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
+                        bool *ok;
+                        QString test = QString::fromStdString(campo);
+                        test.toInt(ok,10);
+
+                        if(ok){
+                            //revisar a la hora de la insercion si se puede castear a int
+                        }
+                        else{
+                            return false;//error al castear a int
+                        }
+                    }
+                    else{
+                        return false;//error operando incompatible
+                    }
+
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+            else if(token1.find("<")!= string::npos){
+                string campo=token1.substr(0,token1.find("<")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find("<")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
+                        bool *ok;
+                        QString test = QString::fromStdString(campo);
+                        test.toInt(ok,10);
+
+                        if(ok){
+                            //revisar a la hora de la insercion si se puede castear a int
+                        }
+                        else{
+                            return false;//error al castear a int
+                        }
+                    }
+                    else{
+                        return false;//error operando incompatible
+                    }
+
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+            else if(token1.find("=")!= string::npos){
+                string campo=token1.substr(0,token1.find("=")-1);
+                if(campo.find(" ")==0){
+                    campo=campo.substr(1,campo.length());
+                }
+                if(campo.find(" ")==campo.length()-1){
+                    campo=campo.substr(0,campo.length()-2);
+                }
+                string valor=token1.substr(token1.find("=")+1,token1.length());
+                if(valor.find(" ")==0){
+                    valor=valor.substr(1,valor.length());
+                }
+                if(valor.find(" ")==valor.length()-1){
+                    valor=valor.substr(0,valor.length()-2);
+                }
+
+
+                if(ptabla->existeMetaDato(campo)){
+
+                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                        AndOr = "AND";
+                        token1.substr(token1.find("AND")+4,token1.length());
+                    }
+                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                        AndOr = "OR";
+                        token1.substr(token1.find("OR")+4,token1.length());
+                    }
+
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo))==valor){
+                        condicionAnterior=1;
+                    }
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo))!=valor){
+                        condicionAnterior=0;
+                    }
+                }
+                else{
+                    //error no existe la columna
+                    return -1;
+                }
+            }
+
+        }
+        else{
+            if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+                AndOr = "AND";
+            }
+            if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+                AndOr = "OR";
+            }
+
+        }
+    }
+}
+
 
 
 //***************************************************************
@@ -655,10 +972,107 @@ bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
     }
 }
 
-bool Interprete::ejecutarSelect(string sentencia)
+bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
 {
-    //se ejecuta select
-    return true;
+
+    string columnaTmp = sentencia.substr(6,sentencia.find("FROM")-1);
+    if(sentencia.find("WHERE")== string::npos){//select sin where
+        string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.length());
+        tabla *tablaTmp = new tabla(nombreTmp,"base de datos");
+        if(_listaTablas->existeTabla(nombreTmp)){
+            if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
+                tablaTmp = _listaTablas->buscarTabla(nombreTmp);
+
+                tablaTmp->imprimirTabla();//por el momento solo imprime
+
+                return true;
+
+            }
+            else{
+                if(_listaTablas->buscarTabla(nombreTmp)->existeListaMetaDato(columnaTmp)){
+                    tablaTmp->setMetaDato(columnaTmp);
+                    //con el for se crean los registros de las columnas seleccionadas y se insertan a la tabla temporal
+                    for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
+                        ListaDato *registroTmp = new ListaDato();
+                        for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
+                            if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
+                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
+                            }
+                        }
+                        tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
+                    }
+                    tablaTmp->imprimirTabla();
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+
+        }
+        else{
+            return false;//error no existe la tabla
+        }
+    }
+    else{
+        string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.find("WHERE")-1);
+        tabla *tablaTmp = new tabla(nombreTmp,"base de datos");
+        if(_listaTablas->existeTabla(nombreTmp)){
+            if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
+                columnaTmp = _listaTablas->buscarTabla(nombreTmp)->getMetaDato()->listaMetaDatoToString();
+                tablaTmp->setMetaDato(columnaTmp);
+
+                for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
+                    ListaDato *registroTmp = new ListaDato();
+                    for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
+                        if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
+                            if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
+                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
+                            }
+                            else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
+                                return false;//error en el where
+                            }
+                        }
+                    }
+                    tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
+                }
+                tablaTmp->imprimirTabla();
+                return true;
+
+            }
+            else{
+                if(_listaTablas->buscarTabla(nombreTmp)->existeListaMetaDato(columnaTmp)){
+                    tablaTmp->setMetaDato(columnaTmp);
+
+                    for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
+                        ListaDato *registroTmp = new ListaDato();
+                        for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
+                            if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
+                                if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
+                                    registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
+                                }
+                                else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
+                                    return false;//error en el where
+                                }
+                            }
+                        }
+                        tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
+                    }
+                    tablaTmp->imprimirTabla();
+                    return true;
+                }
+                else{
+                    //error columna no existe
+                    return false;
+                }
+
+            }
+        }
+        else{
+            return false;//error no existe la tabla
+        }
+    }
+
 }
 
 bool Interprete::ejecutarInsert(string sentencia)
