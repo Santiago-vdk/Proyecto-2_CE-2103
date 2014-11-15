@@ -16,7 +16,7 @@ public:
 private:
 
     bool existeTabla(string ptabla);
-    bool existeColumna(string tabla,string columna);
+    bool existeColumna(tabla *ptabla, string columna);
     bool nombreValido(string nombre);
     bool datoValido(string dato);
     int cumpleWhere(tabla *ptabla, string pcondiciones, int ppos);

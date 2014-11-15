@@ -100,11 +100,9 @@ bool Interprete::existeTabla(string ptabla)
     return false;
 }
 
-bool Interprete::existeColumna(string tabla, string columna)
+bool Interprete::existeColumna(tabla *ptabla, string columna)
 {
-    //creo que aqui no se necesita un try/catch, dependiendo de como se almacenen los
-    // datos en el archivo binario para leer los nombres de las columnas
-    return true;
+    return ptabla->existeMetaDato(columna);
 }
 
 bool Interprete::nombreValido(string nombre)
@@ -152,318 +150,1112 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 {
     string AndOr = "";
     int condicionAnterior = -1;
+    string token1="";
+    bool banderaEntreIf = false;
     while(pcondiciones.find("AND")!=string::npos || pcondiciones.find("OR")!=string::npos){
 
-        string token1="";
-        if(condicionAnterior == -1){
-            if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                token1 = pcondiciones.substr(0,pcondiciones.find("AND")-1);
-                if(token1.find(" ")==0){
-                    token1=token1.substr(1,token1.length());
-                }
-                if(token1.find(" ")==token1.length()-1){
-                    token1=token1.substr(0,token1.length()-2);
-                }
+        if(pcondiciones.find("AND")<pcondiciones.find("OR")){
+            token1 = pcondiciones.substr(0,pcondiciones.find("AND")-1);
+            pcondiciones=pcondiciones.substr(pcondiciones.find("AND")+3,pcondiciones.length());
+            AndOr="AND";
+            if(token1.find(" ")==0){
+                token1=token1.substr(1,token1.length());
             }
-            if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                token1 = pcondiciones.substr(0,pcondiciones.find("OR")-1);
-                if(token1.find(" ")==0){
-                    token1=token1.substr(1,token1.length());
-                }
-                if(token1.find(" ")==token1.length()-1){
-                    token1=token1.substr(0,token1.length()-2);
-                }
+            if(token1.find(" ")==token1.length()-1){
+                token1=token1.substr(0,token1.length()-2);
+            }
+        }
+        if(pcondiciones.find("AND")>pcondiciones.find("OR")){
+            token1 = pcondiciones.substr(0,pcondiciones.find("OR")-1);
+            pcondiciones=pcondiciones.substr(pcondiciones.find("OR")+2,pcondiciones.length());
+            AndOr="OR";
+            if(token1.find(" ")==0){
+                token1=token1.substr(1,token1.length());
+            }
+            if(token1.find(" ")==token1.length()-1){
+                token1=token1.substr(0,token1.length()-2);
+            }
+        }
+
+
+        if(token1.find("<>")!= string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find("<>")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find("<>")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
             }
 
-
-            if(token1.find("<>")!= string::npos){
-                string campo=token1.substr(0,token1.find("<>")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find("<>")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
-
-                if(ptabla->existeMetaDato(campo)){
-
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
-                    }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
-
+            if(ptabla->existeMetaDato(campo)){
+                if(condicionAnterior ==-1){
                     if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
                         condicionAnterior=1;
                     }
-                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                    else {
                         condicionAnterior=0;
                     }
                 }
                 else{
-                    //error no existe la columna
-                    return -1;
-                }
-            }
-
-            else if(token1.find(">=")!= string::npos){
-                string campo=token1.substr(0,token1.find(">=")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find(">=")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
-
-                if(ptabla->existeMetaDato(campo)){
-
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
-                    }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
-                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
-                        bool *ok;
-                        QString test = QString::fromStdString(campo);
-                        test.toInt(ok,10);
-
-                        if(ok){
-                            //revisar a la hora de la insercion si se puede castear a int
+                    if(AndOr=="AND"){
+                        if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                            if(condicionAnterior==1){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
                         }
                         else{
-                            return false;//error al castear a int
+                            condicionAnterior=0;
                         }
                     }
                     else{
-                        return false;//error operando incompatible
-                    }
-
-                }
-                else{
-                    //error no existe la columna
-                    return -1;
-                }
-            }
-
-            else if(token1.find("<=")!= string::npos){
-                string campo=token1.substr(0,token1.find("<=")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find("<=")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
-
-                if(ptabla->existeMetaDato(campo)){
-
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
-                    }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
-                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
-                        bool *ok;
-                        QString test = QString::fromStdString(campo);
-                        test.toInt(ok,10);
-
-                        if(ok){
-                            //revisar a la hora de la insercion si se puede castear a int
+                        if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                            condicionAnterior=1;
                         }
                         else{
-                            return false;//error al castear a int
+                            if(condicionAnterior==1){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
                         }
                     }
-                    else{
-                        return false;//error operando incompatible
-                    }
-                }
-                else{
-                    //error no existe la columna
-                    return -1;
                 }
             }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
 
-            else if(token1.find(">")!= string::npos){
-                string campo=token1.substr(0,token1.find(">")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find(">")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
+        if(token1.find(">=")!= string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find(">=")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find(">=")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
+            }
 
-                if(ptabla->existeMetaDato(campo)){
+            if(ptabla->existeMetaDato(campo)){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
 
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
+                    std::string str = valor;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    int testInt;
+                    float testFloat;
+                    int valorIntEnTabla;
+                    float valorFloatEnTabla;
+                    string banderaIntFloat;
+
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                        banderaIntFloat = "Integer";
+                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
                     }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
-                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
-                        bool *ok;
-                        QString test = QString::fromStdString(campo);
-                        test.toInt(ok,10);
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
-                        if(ok){
-                            //revisar a la hora de la insercion si se puede castear a int
+                        banderaIntFloat = "Decimal";
+                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                    }
+                    if(ok){
+
+                        if(condicionAnterior ==-1){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else {
+                                condicionAnterior=0;
+                            }
                         }
                         else{
-                            return false;//error al castear a int
+                            if(AndOr=="AND"){
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
                         }
                     }
-                    else{
-                        return false;//error operando incompatible
+                    if(!ok){
+                        return -1;//valor no es un numero
                     }
-
                 }
                 else{
-                    //error no existe la columna
-                    return -1;
+                    return -1; //error comparacion invalida
                 }
             }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
 
-            else if(token1.find("<")!= string::npos){
-                string campo=token1.substr(0,token1.find("<")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find("<")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
+        if(token1.find("<=")!= string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find("<=")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find("<=")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
+            }
 
-                if(ptabla->existeMetaDato(campo)){
+            if(ptabla->existeMetaDato(campo)){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                    std::string str = valor;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    int testInt;
+                    float testFloat;
+                    int valorIntEnTabla;
+                    float valorFloatEnTabla;
+                    string banderaIntFloat;
 
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                        banderaIntFloat = "Integer";
+                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
                     }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
-                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer")==0){
-                        bool *ok;
-                        QString test = QString::fromStdString(campo);
-                        test.toInt(ok,10);
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
-                        if(ok){
-                            //revisar a la hora de la insercion si se puede castear a int
+                        banderaIntFloat = "Decimal";
+                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                    }
+                    if(ok){
+
+                        if(condicionAnterior ==-1){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else {
+                                condicionAnterior=0;
+                            }
                         }
                         else{
-                            return false;//error al castear a int
+                            if(AndOr=="AND"){
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
                         }
                     }
-                    else{
-                        return false;//error operando incompatible
+                    if(!ok){
+                        return -1;//valor no es un numero
                     }
-
                 }
                 else{
-                    //error no existe la columna
-                    return -1;
+                    return -1; //error comparacion invalida
                 }
             }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
 
-            else if(token1.find("=")!= string::npos){
-                string campo=token1.substr(0,token1.find("=")-1);
-                if(campo.find(" ")==0){
-                    campo=campo.substr(1,campo.length());
-                }
-                if(campo.find(" ")==campo.length()-1){
-                    campo=campo.substr(0,campo.length()-2);
-                }
-                string valor=token1.substr(token1.find("=")+1,token1.length());
-                if(valor.find(" ")==0){
-                    valor=valor.substr(1,valor.length());
-                }
-                if(valor.find(" ")==valor.length()-1){
-                    valor=valor.substr(0,valor.length()-2);
-                }
+        if(token1.find(">")!= string::npos && token1.find(">=")== string::npos && token1.find("<>")== string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find(">")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find(">")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
+            }
 
+            if(ptabla->existeMetaDato(campo)){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                    std::string str = valor;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    int testInt;
+                    float testFloat;
+                    int valorIntEnTabla;
+                    float valorFloatEnTabla;
+                    string banderaIntFloat;
 
-                if(ptabla->existeMetaDato(campo)){
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                        banderaIntFloat = "Integer";
+                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
 
-                    if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                        AndOr = "AND";
-                        token1.substr(token1.find("AND")+4,token1.length());
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
                     }
-                    if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                        AndOr = "OR";
-                        token1.substr(token1.find("OR")+4,token1.length());
-                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
-                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo))==valor){
+                        banderaIntFloat = "Decimal";
+                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                    }
+                    if(ok){
+
+                        if(condicionAnterior ==-1){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else {
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(!ok){
+                        return -1;//valor no es un numero
+                    }
+                }
+                else{
+                    return -1; //error comparacion invalida
+                }
+            }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
+
+        if(token1.find("<")!= string::npos && token1.find("<=")== string::npos && token1.find("<>")== string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find("<")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find("<")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
+            }
+
+            if(ptabla->existeMetaDato(campo)){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                    std::string str = valor;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    int testInt;
+                    float testFloat;
+                    int valorIntEnTabla;
+                    float valorFloatEnTabla;
+                    string banderaIntFloat;
+
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                        banderaIntFloat = "Integer";
+                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
+                    }
+                    if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
+
+                        banderaIntFloat = "Decimal";
+                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                        std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                        QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                        valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                    }
+                    if(ok){
+
+                        if(condicionAnterior ==-1){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else {
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(!ok){
+                        return -1;//valor no es un numero
+                    }
+                }
+                else{
+                    return -1; //error comparacion invalida
+                }
+            }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
+
+        if(token1.find("=")!= string::npos && token1.find("<=")== string::npos && token1.find(">=")== string::npos){
+            banderaEntreIf = true;
+            string campo=token1.substr(0,token1.find("=")-1);
+            if(campo.find(" ")==0){
+                campo=campo.substr(1,campo.length());
+            }
+            if(campo.find(" ")==campo.length()-1){
+                campo=campo.substr(0,campo.length()-2);
+            }
+            string valor=token1.substr(token1.find("=")+1,token1.length());
+            if(valor.find(" ")==0){
+                valor=valor.substr(1,valor.length());
+            }
+            if(valor.find(" ")==valor.length()-1){
+                valor=valor.substr(0,valor.length()-2);
+            }
+
+            if(ptabla->existeMetaDato(campo)){
+                if(condicionAnterior ==-1){
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
                         condicionAnterior=1;
                     }
-                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo))!=valor){
+                    else {
                         condicionAnterior=0;
                     }
                 }
                 else{
-                    //error no existe la columna
-                    return -1;
+                    if(AndOr=="AND"){
+                        if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                            if(condicionAnterior==1){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                            condicionAnterior=1;
+                        }
+                        else{
+                            if(condicionAnterior==1){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                    }
                 }
             }
+            else{
+                //error no existe la columna
+                return -1;
+            }
+        }
+        if(!banderaEntreIf){
+            return -1;//no encontro operando valido
+        }
+        banderaEntreIf = false;
 
+    }//cierra el while
+
+
+ //en este punto falta la evaluacion de la ultima comparacion ya que
+ //el while se sale al no encontrar mas AND u OR por lo que se necesita
+ //duplicar el codigo del while para la evaluacion final y hacer el return
+
+    if(AndOr==""){//condicion que nunca entro al while
+        token1 = pcondiciones;
+    }
+
+    if(token1.find("<>")!= string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find("<>")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find("<>")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(condicionAnterior ==-1){
+                if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                    condicionAnterior=1;
+                }
+                else {
+                    condicionAnterior=0;
+                }
+            }
+            else{
+                if(AndOr=="AND"){
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                        if(condicionAnterior==1){
+                            condicionAnterior=1;
+                        }
+                        else{
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        condicionAnterior=0;
+                    }
+                }
+                else{
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
+                        condicionAnterior=1;
+                    }
+                    else{
+                        if(condicionAnterior==1){
+                            condicionAnterior=1;
+                        }
+                        else{
+                            condicionAnterior=0;
+                        }
+                    }
+                }
+            }
         }
         else{
-            if(pcondiciones.find("AND")<pcondiciones.find("OR")){
-                AndOr = "AND";
-            }
-            if(pcondiciones.find("AND")>pcondiciones.find("OR")){
-                AndOr = "OR";
-            }
-
+            //error no existe la columna
+            return -1;
         }
     }
-}
+
+    if(token1.find(">=")!= string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find(">=")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find(">=")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+
+                std::string str = valor;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                int testInt;
+                float testFloat;
+                int valorIntEnTabla;
+                float valorFloatEnTabla;
+                string banderaIntFloat;
+
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                    banderaIntFloat = "Integer";
+                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
+
+                    banderaIntFloat = "Decimal";
+                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ok){
+
+                    if(condicionAnterior ==-1){
+                        if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                            condicionAnterior=1;
+                        }
+                        else {
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        if(AndOr=="AND"){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>=testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!ok){
+                    return -1;//valor no es un numero
+                }
+            }
+            else{
+                return -1; //error comparacion invalida
+            }
+        }
+        else{
+            //error no existe la columna
+            return -1;
+        }
+    }
+
+    if(token1.find("<=")!= string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find("<=")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find("<=")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                std::string str = valor;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                int testInt;
+                float testFloat;
+                int valorIntEnTabla;
+                float valorFloatEnTabla;
+                string banderaIntFloat;
+
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                    banderaIntFloat = "Integer";
+                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
+
+                    banderaIntFloat = "Decimal";
+                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ok){
+
+                    if(condicionAnterior ==-1){
+                        if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                            condicionAnterior=1;
+                        }
+                        else {
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        if(AndOr=="AND"){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<=testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<=testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!ok){
+                    return -1;//valor no es un numero
+                }
+            }
+            else{
+                return -1; //error comparacion invalida
+            }
+        }
+        else{
+            //error no existe la columna
+            return -1;
+        }
+    }
+
+    if(token1.find(">")!= string::npos && token1.find(">=")== string::npos && token1.find("<>")== string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find(">")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find(">")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                std::string str = valor;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                int testInt;
+                float testFloat;
+                int valorIntEnTabla;
+                float valorFloatEnTabla;
+                string banderaIntFloat;
+
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                    banderaIntFloat = "Integer";
+                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
+
+                    banderaIntFloat = "Decimal";
+                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ok){
+
+                    if(condicionAnterior ==-1){
+                        if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                            condicionAnterior=1;
+                        }
+                        else {
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        if(AndOr=="AND"){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!ok){
+                    return -1;//valor no es un numero
+                }
+            }
+            else{
+                return -1; //error comparacion invalida
+            }
+        }
+        else{
+            //error no existe la columna
+            return -1;
+        }
+    }
+
+    if(token1.find("<")!= string::npos && token1.find("<=")== string::npos && token1.find("<>")== string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find("<")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find("<")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                std::string str = valor;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                int testInt;
+                float testFloat;
+                int valorIntEnTabla;
+                float valorFloatEnTabla;
+                string banderaIntFloat;
+
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
+                    banderaIntFloat = "Integer";
+                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorIntEnTabla = QstringEnTabla.toInt();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
+
+                    banderaIntFloat = "Decimal";
+                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+
+                    std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
+                    QString QstringEnTabla = QString::fromStdString(stringEnTabla);
+                    valorFloatEnTabla = QstringEnTabla.toFloat();//convierte el valor de la tabla con el cual se queire comparar
+
+                }
+                if(ok){
+
+                    if(condicionAnterior ==-1){
+                        if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                            condicionAnterior=1;
+                        }
+                        else {
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        if(AndOr=="AND"){
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                            else{
+                                condicionAnterior=0;
+                            }
+                        }
+                        else{
+                            if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla<testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla<testFloat)){
+                                condicionAnterior=1;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!ok){
+                    return -1;//valor no es un numero
+                }
+            }
+            else{
+                return -1; //error comparacion invalida
+            }
+        }
+        else{
+            //error no existe la columna
+            return -1;
+        }
+    }
+
+    if(token1.find("=")!= string::npos && token1.find("<=")== string::npos && token1.find(">=")== string::npos){
+        banderaEntreIf = true;
+        string campo=token1.substr(0,token1.find("=")-1);
+        if(campo.find(" ")==0){
+            campo=campo.substr(1,campo.length());
+        }
+        if(campo.find(" ")==campo.length()-1){
+            campo=campo.substr(0,campo.length()-2);
+        }
+        string valor=token1.substr(token1.find("=")+1,token1.length());
+        if(valor.find(" ")==0){
+            valor=valor.substr(1,valor.length());
+        }
+        if(valor.find(" ")==valor.length()-1){
+            valor=valor.substr(0,valor.length()-2);
+        }
+
+        if(ptabla->existeMetaDato(campo)){
+            if(condicionAnterior ==-1){
+                if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                    condicionAnterior=1;
+                }
+                else {
+                    condicionAnterior=0;
+                }
+            }
+            else{
+                if(AndOr=="AND"){
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                        if(condicionAnterior==1){
+                            condicionAnterior=1;
+                        }
+                        else{
+                            condicionAnterior=0;
+                        }
+                    }
+                    else{
+                        condicionAnterior=0;
+                    }
+                }
+                else{
+                    if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
+                        condicionAnterior=1;
+                    }
+                    else{
+                        if(condicionAnterior==1){
+                            condicionAnterior=1;
+                        }
+                        else{
+                            condicionAnterior=0;
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            //error no existe la columna
+            return -1;
+        }
+    }
+    if(banderaEntreIf){//returna lo que haya quedado en el resultado temporal solo si entro a uno de los if de comparacion fuera del while
+        return condicionAnterior;
+    }
+    if(!banderaEntreIf){
+        return -1;//no se encontro operando valido
+    }
+
+
+
+}//cierra funcion cumpleWhere
 
 
 
@@ -1075,46 +1867,443 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
 
 }
 
-bool Interprete::ejecutarInsert(string sentencia)
+bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 {
-    //se ejecuta insert
+    string nombre = sentencia.substr(11,sentencia.find("(")-12);
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+    if(_listaTablas->existeTabla(nombre)){
+
+        string columnas = sentencia.substr(sentencia.find("(")+1,sentencia.find(")")-sentencia.find("(")-1);
+        string token1 = sentencia.substr(sentencia.find("VALUES")+5,sentencia.length());
+        string valores = token1.substr(token1.find("(")+1,token1.find(")")-token1.find("(")-1);
+        ListaDato *listaTmp = new ListaDato;
+        tabla * tablaTmp = _listaTablas->buscarTabla(nombre);
+
+        while(columnas.find(",")!= string::npos){
+            string col = columnas.substr(0,columnas.find(",")-1);
+            if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
+                col = col.substr(1,col.length());
+            }
+            if(col.find(" ")==col.length()-1){
+                col = col.substr(0,col.length()-2);
+            }
+
+            string celda = valores.substr(0,valores.find(",")-1);
+            if(celda.find(" ")==0){//estos if cortan espacios al inicio y al final
+                celda = celda.substr(1,celda.length());
+            }
+            if(celda.find(" ")==celda.length()-1){
+                celda = celda.substr(0,celda.length()-2);
+            }
+
+
+            if(existeColumna(tablaTmp,col)){
+
+                if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Integer")==0){
+                    std::string str = celda;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    test.toInt(ok);
+                    if(ok){
+                        listaTmp->insertarFinal(celda);
+                        columnas = columnas.substr(columnas.find(",")+1,columnas.length());
+                        valores = valores.substr(valores.find(",")+1,valores.length());
+
+                    }
+                    else{
+                        return false;//error no introdujo un int
+                    }
+
+                }
+
+                if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Decimal")==0){
+                    std::string str = celda;
+                    QString test = QString::fromStdString(str);
+                    bool *ok;
+                    test.toFloat(ok);
+                    if(ok){
+                        listaTmp->insertarFinal(celda);
+                        columnas = columnas.substr(columnas.find(",")+1,columnas.length());
+                        valores = valores.substr(valores.find(",")+1,valores.length());
+
+                    }
+                    else{
+                        return false;//error no introdujo un float
+                    }
+                }
+
+                if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("String")==0){
+                    listaTmp->insertarFinal(celda);
+                    columnas = columnas.substr(columnas.find(",")+1,columnas.length());
+                    valores = valores.substr(valores.find(",")+1,valores.length());
+                    //no se valida ya que un string puede tener caracteres numericos
+                }
+
+            }
+            if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
+                return false;//error no existe la columna
+            }
+
+
+        }//cierra el while
+
+        //a continuacion se valida la ultima columna ya que el while no la valida
+
+        string col = columnas;
+        if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
+            col = col.substr(1,col.length());
+        }
+        if(col.find(" ")==col.length()-1){
+            col = col.substr(0,col.length()-2);
+        }
+
+        string celda = valores;
+        if(celda.find(" ")==0){//estos if cortan espacios al inicio y al final
+            celda = celda.substr(1,celda.length());
+        }
+        if(celda.find(" ")==celda.length()-1){
+            celda = celda.substr(0,celda.length()-2);
+        }
+
+
+        if(existeColumna(tablaTmp,col)){
+
+            if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Integer")==0){
+                std::string str = celda;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                test.toInt(ok);
+                if(ok){
+                    listaTmp->insertarFinal(celda);
+                    tablaTmp->insertarRegistro(listaTmp);
+                    return true;
+                }
+                else{
+                    return false;//error no introdujo un int
+                }
+            }
+
+            if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Decimal")==0){
+                std::string str = celda;
+                QString test = QString::fromStdString(str);
+                bool *ok;
+                test.toFloat(ok);
+                if(ok){
+                    listaTmp->insertarFinal(celda);
+                    tablaTmp->insertarRegistro(listaTmp);
+                    return true;
+
+                }
+                else{
+                    return false;//error no introdujo un float
+                }
+            }
+
+            if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("String")==0){
+                listaTmp->insertarFinal(celda);
+                tablaTmp->insertarRegistro(listaTmp);
+                return true;
+                //no se valida la conversion ya que un string puede tener caracteres numericos
+            }
+
+        }
+        if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
+            return false;//error no existe la columna
+        }
+
+
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+        return false;//no existe la tabla
+    }
+}
+
+bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
+{
+
+    string nombre = sentencia.substr(6,sentencia.find("SET")-7);
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+    if(_listaTablas->existeTabla(nombre)){
+        tabla * tablaTmp = _listaTablas->buscarTabla(nombre);
+        if(sentencia.find("WHERE")!= string::npos==0){
+
+            string cambios = sentencia.substr(sentencia.find("SET")+4,sentencia.find("WHERE")-sentencia.find("SET")-5);
+            string where = sentencia.substr(sentencia.find("WHERE")+6,sentencia.length());
+            for(int i = 0;i<tablaTmp->getMatrizDato()->getTamanio();i++){//recorre todos los registros
+                string token1 = cambios;
+                while(token1.find("=")!=string::npos){//recorre los cambios que se desean realizar en cada registro
+                    if(cumpleWhere(tablaTmp,where,i)){//si no cumple las condiciones del where salta al siguiente registro
+                        string col = token1.substr(0,token1.find("=")-1);
+                        if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
+                            col = col.substr(1,col.length());
+                        }
+                        if(col.find(" ")==col.length()-1){
+                            col = col.substr(0,col.length()-2);
+                        }
+
+                        string valor = "";//se define asi para poder utilizar la variable en otros if
+
+                        if(token1.find(",")!=string::npos){//asignacion de valores a variables col y valores cuando
+
+                            valor = token1.substr(token1.find("=")+1,token1.find(",")-1-token1.find("="));
+                            if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
+                                valor = valor.substr(1,valor.length());
+                            }
+                            if(valor.find(" ")==valor.length()-1){
+                                valor = valor.substr(0,valor.length()-2);
+                            }
+                        }
+                        if(token1.find(",")==string::npos){//asignacion de valores a variables col y valores cuando
+
+                            valor = token1.substr(token1.find("=")+1,token1.length());
+                            if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
+                                valor = valor.substr(1,valor.length());
+                            }
+                            if(valor.find(" ")==valor.length()-1){
+                                valor = valor.substr(0,valor.length()-2);
+                            }
+                        }
+
+                        if(tablaTmp->existeMetaDato(col)){
+                            int j = tablaTmp->getMetaDato()->PosMetaDato(col);
+                            tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                            token1 = token1.substr(token1.find(",")+1,token1.length());
+
+                        }
+                        if(!tablaTmp->existeMetaDato(col)){
+                            return false;//error no existe la columna
+                        }
+
+                    }
+
+                }
+            }
+
+
+
+
+        }
+        else{//caso sin where
+            string cambios = sentencia.substr(sentencia.find("SET")+4,sentencia.length());
+            for(int i = 0;i<tablaTmp->getMatrizDato()->getTamanio();i++){//recorre todos los registros
+                string token1 = cambios;
+                while(token1.find("=")!=string::npos){//recorre los cambios que se desean realizar en cada registro
+
+                    string col = token1.substr(0,token1.find("=")-1);
+                    if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
+                        col = col.substr(1,col.length());
+                    }
+                    if(col.find(" ")==col.length()-1){
+                        col = col.substr(0,col.length()-2);
+                    }
+
+                    string valor = "";
+                    if(token1.find(",")!=string::npos){//asignacion de valores a variables col y valores cuando
+
+                        valor = token1.substr(token1.find("=")+1,token1.find(",")-1-token1.find("="));
+                        if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
+                            valor = valor.substr(1,valor.length());
+                        }
+                        if(valor.find(" ")==valor.length()-1){
+                            valor = valor.substr(0,valor.length()-2);
+                        }
+                    }
+                    if(token1.find(",")==string::npos){//asignacion de valores a variables col y valores cuando
+
+                        valor = token1.substr(token1.find("=")+1,token1.length());
+                        if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
+                            valor = valor.substr(1,valor.length());
+                        }
+                        if(valor.find(" ")==valor.length()-1){
+                            valor = valor.substr(0,valor.length()-2);
+                        }
+                    }
+
+                    if(tablaTmp->existeMetaDato(col)){
+                        int j = tablaTmp->getMetaDato()->PosMetaDato(col);
+                        tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                        token1 = token1.substr(token1.find(",")+1,token1.length());
+
+                    }
+                    if(!tablaTmp->existeMetaDato(col)){
+                        return false;//error no existe la columna
+                    }
+
+
+
+                }
+            }
+            return true;
+
+
+
+        }
+
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+        return false;//la tabla no existe
+    }
+
+
+}
+
+bool Interprete::ejecutarDelete(string sentencia)//se ejecuta delete
+{
+    string nombre = sentencia.substr(sentencia.find("FROM")+4,sentencia.find("WHERE")-5-sentencia.find("FROM"));
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+
+    if(_listaTablas->existeTabla(nombre)){
+
+        tabla* tablaTmp = _listaTablas->buscarTabla(nombre);
+        string condiciones = sentencia.substr(sentencia.find("WHERE")+5,sentencia.length());
+        for(int i=0;i<tablaTmp->getMatrizDato()->getTamanio();i++){
+
+            if(cumpleWhere(tablaTmp,condiciones,i)){
+                tablaTmp->getMatrizDato()->deleteLista(i);
+            }
+        }
+        return true;
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+        return false;//no existe la tabla
+    }
+
     return true;
 }
 
-bool Interprete::ejecutarUpdate(string sentencia)
+bool Interprete::ejecutarCreateIndex(string sentencia)//se ejecuta create index
 {
-    //se ejecuta update
-    return true;
+    string nombre = sentencia.substr(sentencia.find("ON")+2,sentencia.find("(")-3-sentencia.find("ON"));
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+
+
+    string columna = sentencia.substr(sentencia.find("(")+1,sentencia.find(")")-2-sentencia.find("("));
+    if(columna.find(" ")==0){//estos if cortan espacios al inicio y al final
+        columna = columna.substr(1,columna.length());
+    }
+    if(columna.find(" ")==columna.length()-1){
+        columna = columna.substr(0,columna.length()-2);
+    }
+
+    if(_listaTablas->existeTabla(nombre)){
+        tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
+        if(tablaTmp->existeMetaDato(columna)){
+            //aqui se crea el indice
+
+            return true;
+        }
+        else{
+            return false;//no existe la columna
+        }
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+
+        return false;//no existe la tabla
+    }
+
+
 }
 
-bool Interprete::ejecutarDelete(string sentencia)
+bool Interprete::ejecutarCompress(string sentencia)//se ejecuta compress
 {
-    //se ejecuta delete
-    return true;
+    string nombre = sentencia.substr(sentencia.find("TABLE")+5,sentencia.length());
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+
+    if(_listaTablas->existeTabla(nombre)){
+        tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
+        //aqui se realiza el compress
+
+        return true;
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+
+        return false;//no existe la tabla
+    }
+
+
 }
 
-bool Interprete::ejecutarCreateIndex(string sentencia)
+bool Interprete::ejecutarBackup(string sentencia)//se ejecuta backup
 {
-    //se ejecuta create index
-    return true;
+    string nombre = sentencia.substr(sentencia.find("TABLE")+5,sentencia.length());
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
+
+    if(_listaTablas->existeTabla(nombre)){
+        tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
+        //aqui se realiza el backup
+
+        return true;
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+
+        return false;//no existe la tabla
+    }
 }
 
-bool Interprete::ejecutarCompress(string sentencia)
+bool Interprete::ejecutarRestore(string sentencia)//se ejecuta restore
 {
-    //se ejecuta compress
-    return true;
-}
+    string nombre = sentencia.substr(sentencia.find("TABLE")+5,sentencia.length());
+    if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
+        nombre = nombre.substr(1,nombre.length());
+    }
+    if(nombre.find(" ")==nombre.length()-1){
+        nombre = nombre.substr(0,nombre.length()-2);
+    }
 
-bool Interprete::ejecutarBackup(string sentencia)
-{
-    //se ejecuta backup
-    return true;
-}
+    if(_listaTablas->existeTabla(nombre)){
+        tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
+        //aqui se realiza el backup
 
-bool Interprete::ejecutarRestore(string sentencia)
-{
-    //se ejecuta restore
-    return true;
+        return true;
+
+
+    }
+    if(!_listaTablas->existeTabla(nombre)){
+
+        return false;//no existe la tabla
+    }
 }
 
 /*------------------------------------------------------------------------------*/
