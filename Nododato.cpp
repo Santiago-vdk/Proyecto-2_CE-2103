@@ -31,3 +31,8 @@ void NodoDato::setPrev(NodoDato *pprev)
 {
     _prev = pprev;
 }
+
+void NodoDato::setDato(string pDato)
+{
+    _dato = pDato;
+}

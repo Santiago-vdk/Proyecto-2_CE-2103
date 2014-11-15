@@ -67,3 +67,51 @@ string MatrizDato::buscarDatoEnPos(int i, int j)
         return NULL;
     }
 }
+
+void MatrizDato::setDato(int i, int j,string pDato)
+{
+    ListaDato * tmp = _head;
+    for(int a=0;a<i;a++){
+        tmp=tmp->getNext();
+    }
+    NodoDato* tmp2 = tmp->getHead();
+    for(int b=0;b<j;b++){
+        tmp2=tmp2->getNext();
+    }
+
+    tmp2->setDato(pDato);
+
+}
+
+void MatrizDato::deleteLista(int i)
+{
+    if(i==0){
+        _head->getNext()->setPrev(NULL);
+        _head = _head->getNext();
+        _tamanio--;
+    }
+    else if(i=_tamanio-1){
+        _tail->getPrev()->setNext(NULL);
+        _tail = _tail->getPrev();
+        _tamanio--;
+    }
+
+    else{
+
+        ListaDato *tmp = _head;
+        for(int a=0;a<i;a++){
+            tmp = tmp->getNext();
+        }
+        tmp->getPrev()->setNext(tmp->getNext());
+        tmp->getNext()->setPrev(tmp->getPrev());
+        _tamanio--;
+
+    }
+
+
+
+
+
+
+
+}

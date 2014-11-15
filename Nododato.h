@@ -15,6 +15,7 @@ public:
 
     void setNext(NodoDato *pnext);
     void setPrev(NodoDato *pprev);
+    void setDato(string pDato);
 
 private:
     string _dato;

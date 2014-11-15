@@ -18,6 +18,7 @@ public:
 
     void setNext(ListaDato *pnext);
     void setPrev(ListaDato *pprev);
+    void setDato(int ppos,string pDato);
 
     void insertarFinal(string pdato);
     string buscarDatoEnPos(int ppos);

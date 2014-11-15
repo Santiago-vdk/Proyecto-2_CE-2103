@@ -47,6 +47,17 @@ void ListaDato::setPrev(ListaDato *pprev)
     _prev = pprev;
 }
 
+void ListaDato::setDato(int ppos, string pDato)
+{
+    if(ppos<_tamanio){
+        NodoDato *tmp = _head;
+        for(int i = 0; i<ppos;i++){
+            tmp = tmp->getNext();
+        }
+        tmp->setDato(pDato);
+    }
+}
+
 void ListaDato::insertarFinal(string pdato)
 {
     NodoDato *tmp = new NodoDato(pdato);
