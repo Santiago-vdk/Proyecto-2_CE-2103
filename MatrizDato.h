@@ -14,6 +14,8 @@ public:
     ListaDato *buscarListaEnPos(int ppos);
     string buscarDatoEnPos(int i,int j);
 
+    void imprimirMatriz();
+
 private:
     int _tamanio;
     ListaDato *_head;

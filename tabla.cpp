@@ -25,9 +25,8 @@ string tabla::getNombreBasedeDatos()
 
 void tabla::agregarMetaDatos(string pNombre, string pTipoDato)
 {
-
-    _metaDato->insertarFinal(pNombre,pTipoDato);
-}
+   //_metaDato->insertarFinal(tmp);
+    _metaDato->insertarFinal(pNombre,pTipoDato);}
 
 ListaMetaDato *tabla::getListaMetaDato()
 {
@@ -39,8 +38,7 @@ MatrizDato *tabla::getMatrizDato()
     return _matrizDato;
 }
 
-void tabla::insertarRegistro(ListaDato *pRegistro)
-{
+void tabla::insertarRegistro(ListaDato *pRegistro){
     _matrizDato->insertarFinal(pRegistro);
 }
 
@@ -55,8 +53,8 @@ void tabla::setMetaDato(string pMetaDato)
     }
 }
 
-ListaMetaDato *tabla::getMetaDato()
-{
+
+ListaMetaDato *tabla::getMetaDato(){
     return _metaDato;
 }
 

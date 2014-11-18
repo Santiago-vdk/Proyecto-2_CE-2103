@@ -1,4 +1,7 @@
 #include "MatrizDato.h"
+#include <iostream>
+
+using namespace std;
 
 MatrizDato::MatrizDato()
 {
@@ -49,7 +52,6 @@ ListaDato *MatrizDato::buscarListaEnPos(int ppos)
         return NULL;
     }
 }
-
 string MatrizDato::buscarDatoEnPos(int i, int j)
 {
     if(i<_tamanio && j<_head->getTamanio()){
@@ -65,5 +67,14 @@ string MatrizDato::buscarDatoEnPos(int i, int j)
     }
     else{
         return NULL;
+    }
+}void MatrizDato::imprimirMatriz()
+{
+    ListaDato *listaTmp = _head;
+    for(int i=0;i<_tamanio;i++){
+        for(int j = 0; j<listaTmp->getTamanio();j++){
+            cout<<listaTmp->buscarDatoEnPos(j)<<endl;
+        }
+        listaTmp = listaTmp->getNext();
     }
 }

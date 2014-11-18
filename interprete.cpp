@@ -1155,6 +1155,27 @@ void Interprete::generarTabla(string pName)
     if (archivo.openFile(truncate)){ //si se puede abrir el archivo
         _listaTablas->insertarFinal(pName,"BaseDatos");
         _listaTablas->getTail()->getTabla()->setMetaDato(archivo.getFirstRecord().getDato());
+
+        Registro RFinal("♥");
+        int contador = 0;
+        ListaDato *temporal = new ListaDato();
+        for(int i = 0; archivo.getRecordInPos(i,RFinal).getDato() != RFinal.getDato(); i++){
+            string archivoTmp = archivo.getRecordInPos(i,RFinal).getDato();
+            if(contador <_listaTablas->getTail()->getTabla()->getMetaDato().getTamanio()){
+                temporal->insertarFinal(archivoTmp);
+                contador++;
+            }
+
+            else{
+                _listaTablas->getTail()->getTabla()->getMatrizDato()->insertarFinal(temporal);
+                temporal = new ListaDato();
+                contador = 0;
+            }
+
+        }
+        _listaTablas->getTail()->getTabla()->getMatrizDato()->imprimirMatriz();
+
+        archivo.closeFile();
     }
 
 }

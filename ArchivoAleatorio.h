@@ -48,7 +48,7 @@ public:
 
 
     TIPOREGISTRO getFirstRecord();
-    TIPOREGISTRO getRecordInPos(int i);
+    TIPOREGISTRO getRecordInPos(int i, TIPOREGISTRO registroTemp);
 
     bool reset();
     bool gotoEnd();
@@ -169,7 +169,7 @@ TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getFirstRecord(){
 
 
 template <class TIPOREGISTRO>
-TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i){
+TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i, TIPOREGISTRO registroTmp){
     TIPOREGISTRO registroAux;
     file.clear();
     reset();
@@ -179,11 +179,9 @@ TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i){
         j++;
     }
     if(file.eof()){
-        cout<<"fin archivo"<<endl;
-    }
-    return registroAux;
-
-
+        cout << "Llegue al final del archivo" << endl;
+        return registroTmp;
+    }    return registroAux;
 
 
 }
