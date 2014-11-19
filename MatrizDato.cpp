@@ -24,7 +24,7 @@ ListaDato *MatrizDato::getTail()
 
 void MatrizDato::insertarFinal(ListaDato *plista)
 {
-    if(_tamanio = 0 ){
+    if(_tamanio == 0 ){
         _head = _tail = plista;
     }
     else{

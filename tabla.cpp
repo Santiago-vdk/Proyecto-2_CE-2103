@@ -46,13 +46,42 @@ void tabla::insertarRegistro(ListaDato *pRegistro)
 
 void tabla::setMetaDato(string pMetaDato)
 {
-    ListaMetaDato * listaTmp = new ListaMetaDato();
     while(pMetaDato.find(",") != string::npos){
-        string datoTmp = pMetaDato.substr(0,pMetaDato.find(":")-1);
+        string datoTmp = pMetaDato.substr(0,pMetaDato.find(":"));
         string tipoTmp = pMetaDato.substr(pMetaDato.find(":")+1,pMetaDato.find(",") - pMetaDato.find(":") -1);
-        pMetaDato = pMetaDato.substr(pMetaDato.find(","),pMetaDato.length() - pMetaDato.find(","));
-        listaTmp->insertarFinal(datoTmp,tipoTmp);
+        pMetaDato = pMetaDato.substr(pMetaDato.find(",")+1,pMetaDato.length());
+        _metaDato->insertarFinal(datoTmp,tipoTmp);
     }
+    string datoTmp = pMetaDato.substr(0,pMetaDato.find(":"));
+    string tipoTmp = pMetaDato.substr(pMetaDato.find(":")+1,pMetaDato.length());
+    _metaDato->insertarFinal(datoTmp,tipoTmp);
+
+}
+
+void tabla::setMetaDatoSinTipo(string pMetaDato)
+{
+    while(pMetaDato.find(",")!=string::npos){
+        string datoTmp = pMetaDato.substr(0,pMetaDato.find(","));
+
+        if(datoTmp.find(" ")==0){
+            datoTmp = datoTmp.substr(1,datoTmp.length());
+        }
+        if(datoTmp.find(" ")==datoTmp.length()-1){
+            datoTmp = datoTmp.substr(0,datoTmp.length()-2);
+        }
+        pMetaDato = pMetaDato.substr(pMetaDato.find(",")+1,pMetaDato.length());
+        _metaDato->insertarFinal(datoTmp,"String");
+    }
+
+    string datoTmp = pMetaDato;
+    if(datoTmp.find(" ")==0){
+        datoTmp = datoTmp.substr(1,datoTmp.length());
+    }
+    if(datoTmp.find(" ")==datoTmp.length()-1){
+        datoTmp = datoTmp.substr(0,datoTmp.length()-2);
+    }
+    pMetaDato = pMetaDato.substr(pMetaDato.find(",")+1,pMetaDato.length() - pMetaDato.find(",")-1);
+    _metaDato->insertarFinal(datoTmp,"String");//esta funcion se utiliza para crear tablas temporales donde el tipo es irrelevante
 }
 
 ListaMetaDato *tabla::getMetaDato()
@@ -63,9 +92,10 @@ ListaMetaDato *tabla::getMetaDato()
 void tabla::imprimirTabla()
 {
     cout<<"nombre: "<<_Nombre<<endl;
-    NodoMetaDato tmp = _metaDato->getHead();
+    NodoMetaDato *tmp = _metaDato->getHead();
     for(int i=0;i<_metaDato->getTamanio();i++){
-        cout<<"MetaDato: "<<tmp.getDato()->getmetaDato()<<" Tipo: "<<tmp.getDato()->getTipometaDato()<<endl;
+        cout<<"MetaDato: "<<tmp->getDato()->getmetaDato()<<" Tipo: "<<tmp->getDato()->getTipometaDato()<<endl;
+        tmp = tmp->getNext();
     }
     for(int j=0;j<_matrizDato->getTamanio();j++){
         cout<<"Registro #"<<j<<endl;
@@ -88,8 +118,9 @@ bool tabla::existeMetaDato(string pmetaDato)
 
 bool tabla::existeListaMetaDato(string plistaMetaDato)
 {
+    cout<<"plistaMetadato:"<<plistaMetaDato<<endl;
     while(plistaMetaDato.find(",")!=string::npos){
-        string token1 = plistaMetaDato.substr(0,plistaMetaDato.find(",")-1);
+        string token1 = plistaMetaDato.substr(0,plistaMetaDato.find(","));
         //los if eliminan espacios al inicio y al final para evitar que falle la igualacion
         if(token1.find(" ")==0){
             token1= token1.substr(1,token1.length()-1);
@@ -100,7 +131,11 @@ bool tabla::existeListaMetaDato(string plistaMetaDato)
         if(!existeMetaDato(token1)){
             return false;
         }
+        plistaMetaDato=plistaMetaDato.substr(plistaMetaDato.find(",")+1,plistaMetaDato.length());
+        cout<<"plistaMetadato:"<<plistaMetaDato<<endl;
     }
+    cout<<"sali while"<<endl;
+
     string token1 = plistaMetaDato;
     //los if eliminan espacios al inicio y al final para evitar que falle la igualacion
     if(token1.find(" ")==0){
@@ -109,6 +144,7 @@ bool tabla::existeListaMetaDato(string plistaMetaDato)
     if(token1.find(" ")==token1.length()-1){
         token1= token1.substr(0,token1.length()-2);
     }
+    cout<<"token1:"<<token1<<endl;
     if(!existeMetaDato(token1)){
         return false;
     }

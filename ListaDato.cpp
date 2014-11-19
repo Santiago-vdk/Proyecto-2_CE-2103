@@ -1,5 +1,8 @@
 #include "ListaDato.h"
 #include "Nododato.h"
+#include "iostream"
+
+using namespace std;
 
 ListaDato::ListaDato()
 {
@@ -8,6 +11,18 @@ ListaDato::ListaDato()
     _tail = NULL;
     _next = NULL;
     _prev = NULL;
+}
+
+ListaDato::ListaDato(int ppos)
+{
+    _tamanio = 0;
+    _head = NULL;
+    _tail = NULL;
+    _next = NULL;
+    _prev = NULL;
+    for(int i=0;i<ppos;i++){
+        insertarFinal("~");
+    }
 }
 
 
@@ -61,9 +76,10 @@ void ListaDato::setDato(int ppos, string pDato)
 void ListaDato::insertarFinal(string pdato)
 {
     NodoDato *tmp = new NodoDato(pdato);
-    if(_tamanio=0){
+    if(_tamanio==0){
         _head = tmp;
         _tail = tmp;
+
     }
     else{
         _tail->setNext(tmp);
@@ -71,7 +87,6 @@ void ListaDato::insertarFinal(string pdato)
         _tail = tmp;
     }
     _tamanio++;
-
 
 }
 

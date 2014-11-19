@@ -9,6 +9,7 @@ class ListaDato
 {
 public:
     ListaDato();
+    ListaDato(int ppos);
 
     int getTamanio();
     NodoDato *getHead();

@@ -8,8 +8,8 @@ public:
     ListaMetaDato();
 
     int getTamanio();
-    NodoMetaDato getHead();
-    NodoMetaDato getTail();
+    NodoMetaDato *getHead();
+    NodoMetaDato *getTail();
 
     void insertarFinal(string pNombre, string pTipo);
     metaDato *buscarPosicion(int pPos);

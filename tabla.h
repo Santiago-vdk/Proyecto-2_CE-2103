@@ -19,6 +19,8 @@ public:
     MatrizDato * getMatrizDato();
     void insertarRegistro(ListaDato *pRegistro);
     void setMetaDato(string pMetaDato);
+    void setMetaDatoSinTipo(string pMetaDato);
+
     ListaMetaDato *getMetaDato();
     void imprimirTabla();
     bool existeMetaDato(string pmetaDato);

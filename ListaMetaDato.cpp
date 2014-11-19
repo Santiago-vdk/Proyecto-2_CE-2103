@@ -14,14 +14,14 @@ int ListaMetaDato::getTamanio()
     return _tamanio;
 }
 
-NodoMetaDato ListaMetaDato::getHead()
+NodoMetaDato *ListaMetaDato::getHead()
 {
-    return *_head;
+    return _head;
 }
 
-NodoMetaDato ListaMetaDato::getTail()
+NodoMetaDato *ListaMetaDato::getTail()
 {
-    return *_tail;
+    return _tail;
 }
 
 void ListaMetaDato::insertarFinal(string pNombre, string pTipo)
@@ -63,10 +63,11 @@ string ListaMetaDato::listaMetaDatoToString()
     string tmp ="";
     NodoMetaDato *nodoTmp = _head;
     for(int i = 0; i<_tamanio;i++){
-            tmp.append(nodoTmp->getDato()->getmetaDato());
-            tmp.append(",");
+            tmp= tmp+nodoTmp->getDato()->getmetaDato()+":"+nodoTmp->getDato()->getTipometaDato()+",";
+            nodoTmp=nodoTmp->getNext();
     }
-    tmp = tmp.substr(0,tmp.length()-2);//elimina la ultima coma
+    tmp = tmp.substr(0,tmp.length()-1);//elimina la ultima coma
+    cout<<"lista...tostring:"<<tmp<<endl;
     return tmp;
 }
 

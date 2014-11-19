@@ -148,11 +148,13 @@ bool Interprete::datoValido(string dato)
 
 int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 {
+    cout<<"EntreWhere:"<<pcondiciones<<endl;
     string AndOr = "";
     int condicionAnterior = -1;
     string token1="";
     bool banderaEntreIf = false;
     while(pcondiciones.find("AND")!=string::npos || pcondiciones.find("OR")!=string::npos){
+        //********* EN este par de ifs revisa si el mas proximo es un or o un and
 
         if(pcondiciones.find("AND")<pcondiciones.find("OR")){
             token1 = pcondiciones.substr(0,pcondiciones.find("AND")-1);
@@ -176,9 +178,12 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 token1=token1.substr(0,token1.length()-2);
             }
         }
+        //********
+        cout<<"pcondicionesEnWhere:"<<pcondiciones<<endl;
 
-
+        //********************** verifica los signos de comparacion
         if(token1.find("<>")!= string::npos){
+            cout<<"entre <>"<<endl;
             banderaEntreIf = true;
             string campo=token1.substr(0,token1.find("<>")-1);
             if(campo.find(" ")==0){
@@ -187,7 +192,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             if(campo.find(" ")==campo.length()-1){
                 campo=campo.substr(0,campo.length()-2);
             }
-            string valor=token1.substr(token1.find("<>")+1,token1.length());
+            string valor=token1.substr(token1.find("<>")+2,token1.length());
             if(valor.find(" ")==0){
                 valor=valor.substr(1,valor.length());
             }
@@ -195,8 +200,10 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 valor=valor.substr(0,valor.length()-2);
             }
 
+            cout<<"campo:"<<campo<<" valor:"<<valor<<endl;
             if(ptabla->existeMetaDato(campo)){
                 if(condicionAnterior ==-1){
+
                     if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)!=0){
                         condicionAnterior=1;
                     }
@@ -239,6 +246,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
         }
 
+        //********************** verifica los signos de comparacion
         if(token1.find(">=")!= string::npos){
             banderaEntreIf = true;
             string campo=token1.substr(0,token1.find(">=")-1);
@@ -248,7 +256,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             if(campo.find(" ")==campo.length()-1){
                 campo=campo.substr(0,campo.length()-2);
             }
-            string valor=token1.substr(token1.find(">=")+1,token1.length());
+            string valor=token1.substr(token1.find(">=")+2,token1.length());
             if(valor.find(" ")==0){
                 valor=valor.substr(1,valor.length());
             }
@@ -262,7 +270,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
+                    bool ok;
                     int testInt;
                     float testFloat;
                     int valorIntEnTabla;
@@ -271,7 +279,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                         banderaIntFloat = "Integer";
-                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                        testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -281,7 +289,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                         banderaIntFloat = "Decimal";
-                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                        testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -328,8 +336,30 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     if(!ok){
-                        return -1;//valor no es un numero
+                        if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                            if(condicionAnterior ==-1){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(AndOr=="AND"){
+                                    condicionAnterior=0;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            return -1;//valor no es un numero
+                        }
                     }
+
+
                 }
                 else{
                     return -1; //error comparacion invalida
@@ -341,6 +371,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
         }
 
+
         if(token1.find("<=")!= string::npos){
             banderaEntreIf = true;
             string campo=token1.substr(0,token1.find("<=")-1);
@@ -350,7 +381,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             if(campo.find(" ")==campo.length()-1){
                 campo=campo.substr(0,campo.length()-2);
             }
-            string valor=token1.substr(token1.find("<=")+1,token1.length());
+            string valor=token1.substr(token1.find("<=")+2,token1.length());
             if(valor.find(" ")==0){
                 valor=valor.substr(1,valor.length());
             }
@@ -363,7 +394,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
+                    bool ok;
                     int testInt;
                     float testFloat;
                     int valorIntEnTabla;
@@ -372,7 +403,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                         banderaIntFloat = "Integer";
-                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                        testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -382,7 +413,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                         banderaIntFloat = "Decimal";
-                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                        testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -429,7 +460,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     if(!ok){
-                        return -1;//valor no es un numero
+                        if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                            if(condicionAnterior ==-1){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(AndOr=="AND"){
+                                    condicionAnterior=0;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            return -1;//valor no es un numero
+                        }
                     }
                 }
                 else{
@@ -464,7 +515,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
+                    bool ok;
                     int testInt;
                     float testFloat;
                     int valorIntEnTabla;
@@ -473,7 +524,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                         banderaIntFloat = "Integer";
-                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                        testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -483,7 +534,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                         banderaIntFloat = "Decimal";
-                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                        testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -530,7 +581,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     if(!ok){
-                        return -1;//valor no es un numero
+                        if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                            if(condicionAnterior ==-1){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(AndOr=="AND"){
+                                    condicionAnterior=0;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            return -1;//valor no es un numero
+                        }
                     }
                 }
                 else{
@@ -565,7 +636,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
+                    bool ok;
                     int testInt;
                     float testFloat;
                     int valorIntEnTabla;
@@ -574,7 +645,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                         banderaIntFloat = "Integer";
-                        testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                        testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -584,7 +655,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                         banderaIntFloat = "Decimal";
-                        testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                        testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                         std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                         QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -631,7 +702,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     if(!ok){
-                        return -1;//valor no es un numero
+                        if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                            if(condicionAnterior ==-1){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(AndOr=="AND"){
+                                    condicionAnterior=0;
+                                }
+                                else{
+                                    if(condicionAnterior==1){
+                                        condicionAnterior=1;
+                                    }
+                                    else{
+                                        condicionAnterior=0;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            return -1;//valor no es un numero
+                        }
                     }
                 }
                 else{
@@ -716,9 +807,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
  //el while se sale al no encontrar mas AND u OR por lo que se necesita
  //duplicar el codigo del while para la evaluacion final y hacer el return
 
-    if(AndOr==""){//condicion que nunca entro al while
-        token1 = pcondiciones;
-    }
+    token1 = pcondiciones;
+    cout<<"token1FueraWhile:"<<token1<<endl;
 
     if(token1.find("<>")!= string::npos){
         banderaEntreIf = true;
@@ -729,7 +819,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(campo.find(" ")==campo.length()-1){
             campo=campo.substr(0,campo.length()-2);
         }
-        string valor=token1.substr(token1.find("<>")+1,token1.length());
+        string valor=token1.substr(token1.find("<>")+2,token1.length());
         if(valor.find(" ")==0){
             valor=valor.substr(1,valor.length());
         }
@@ -790,7 +880,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(campo.find(" ")==campo.length()-1){
             campo=campo.substr(0,campo.length()-2);
         }
-        string valor=token1.substr(token1.find(">=")+1,token1.length());
+        string valor=token1.substr(token1.find(">=")+2,token1.length());
         if(valor.find(" ")==0){
             valor=valor.substr(1,valor.length());
         }
@@ -804,7 +894,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
-                bool *ok;
+                bool ok;
                 int testInt;
                 float testFloat;
                 int valorIntEnTabla;
@@ -813,7 +903,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                     banderaIntFloat = "Integer";
-                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                    testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -823,7 +913,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                     banderaIntFloat = "Decimal";
-                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                    testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -870,7 +960,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     }
                 }
                 if(!ok){
-                    return -1;//valor no es un numero
+                    if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                        if(condicionAnterior ==-1){
+                            condicionAnterior=0;
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        return -1;//valor no es un numero
+                    }
                 }
             }
             else{
@@ -892,7 +1002,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(campo.find(" ")==campo.length()-1){
             campo=campo.substr(0,campo.length()-2);
         }
-        string valor=token1.substr(token1.find("<=")+1,token1.length());
+        string valor=token1.substr(token1.find("<=")+2,token1.length());
         if(valor.find(" ")==0){
             valor=valor.substr(1,valor.length());
         }
@@ -905,7 +1015,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
-                bool *ok;
+                bool ok;
                 int testInt;
                 float testFloat;
                 int valorIntEnTabla;
@@ -914,7 +1024,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                     banderaIntFloat = "Integer";
-                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                    testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -924,7 +1034,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                     banderaIntFloat = "Decimal";
-                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                    testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -971,7 +1081,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     }
                 }
                 if(!ok){
-                    return -1;//valor no es un numero
+                    if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                        if(condicionAnterior ==-1){
+                            condicionAnterior=0;
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        return -1;//valor no es un numero
+                    }
                 }
             }
             else{
@@ -1006,7 +1136,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
-                bool *ok;
+                bool ok;
                 int testInt;
                 float testFloat;
                 int valorIntEnTabla;
@@ -1015,7 +1145,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                     banderaIntFloat = "Integer";
-                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                    testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -1025,7 +1155,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                     banderaIntFloat = "Decimal";
-                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                    testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -1072,7 +1202,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     }
                 }
                 if(!ok){
-                    return -1;//valor no es un numero
+                    if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                        if(condicionAnterior ==-1){
+                            condicionAnterior=0;
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        return -1;//valor no es un numero
+                    }
                 }
             }
             else{
@@ -1107,7 +1257,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
-                bool *ok;
+                bool ok;
                 int testInt;
                 float testFloat;
                 int valorIntEnTabla;
@@ -1116,7 +1266,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                     banderaIntFloat = "Integer";
-                    testInt = test.toInt(ok);//convierte el valor que se desea comparar a int
+                    testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -1126,7 +1276,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                     banderaIntFloat = "Decimal";
-                    testFloat = test.toFloat(ok);//convierte el valor que se desea comparar a int
+                    testFloat = test.toFloat(&ok);//convierte el valor que se desea comparar a int
 
                     std::string stringEnTabla = ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo));
                     QString QstringEnTabla = QString::fromStdString(stringEnTabla);
@@ -1173,7 +1323,27 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                     }
                 }
                 if(!ok){
-                    return -1;//valor no es un numero
+                    if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
+                        if(condicionAnterior ==-1){
+                            condicionAnterior=0;
+                        }
+                        else{
+                            if(AndOr=="AND"){
+                                condicionAnterior=0;
+                            }
+                            else{
+                                if(condicionAnterior==1){
+                                    condicionAnterior=1;
+                                }
+                                else{
+                                    condicionAnterior=0;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        return -1;//valor no es un numero
+                    }
                 }
             }
             else{
@@ -1202,7 +1372,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(valor.find(" ")==valor.length()-1){
             valor=valor.substr(0,valor.length()-2);
         }
-
+        cout<<"=fueradelWhere:"<<AndOr<<"condicionAnterior:"<<condicionAnterior<<endl;
         if(ptabla->existeMetaDato(campo)){
             if(condicionAnterior ==-1){
                 if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
@@ -1252,8 +1422,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
     if(!banderaEntreIf){
         return -1;//no se encontro operando valido
     }
-
-
 
 }//cierra funcion cumpleWhere
 
@@ -1433,11 +1601,12 @@ bool Interprete::revisarInsert(string sentencia)//se revisa sintaxis de insert
                                 string token1 = sentencia.substr(sentencia.find("("),sentencia.find(")")-sentencia.find("("));
                                 string token2 = sentencia.substr(sentencia.find("(",sentencia.find("VALUES")),sentencia.find(")",sentencia.find("VALUES"))-sentencia.find("(",sentencia.find("VALUES")));
 
-                                cout<<"token1"<<token1<<"token2"<<token2<<endl;
                                 while(token1.find(",")!=string::npos && token2.find(",")!=string::npos){
-                                    token1 = token1.substr(token1.find(",")+1, token1.length()-token1.find(","));
-                                    token2 = token2.substr(token2.find(",")+1, token1.length()-token2.find(","));
+                                    cout<<"token1:"<<token1<<" token2:"<<token2<<endl;
+                                    token1 = token1.substr(token1.find(",")+1, token1.length());
+                                    token2 = token2.substr(token2.find(",")+1, token2.length());
                                 }
+                                cout<<"token1:"<<token1<<" token2:"<<token2<<endl;
                                 if(token1.find(",")==string::npos && token2.find(",")==string::npos){
 
                                     return true;//misma cantidad de comas en el set y los values
@@ -1705,6 +1874,7 @@ bool Interprete::revisarRestore(string sentencia)//se revisa sintaxis de restore
 
 bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
 {
+
     string nombre = sentencia.substr(13,sentencia.find("(")-13);
     if(nombre.find(" ")==0){
         nombre=nombre.substr(1,nombre.length()-1);
@@ -1767,10 +1937,28 @@ bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
 bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
 {
 
-    string columnaTmp = sentencia.substr(6,sentencia.find("FROM")-1);
+    string columnaTmp = sentencia.substr(6,sentencia.find("FROM")-6);
+
+    if(columnaTmp.find(" ")==0){//estos if cortan los epacios sobrantes al inicio y al final
+        columnaTmp = columnaTmp.substr(1,columnaTmp.length());
+    }
+    if(columnaTmp.find(" ")==columnaTmp.length()-1){
+        columnaTmp = columnaTmp.substr(0,columnaTmp.length()-1);
+    }
+    cout<<"entreSelect:"<<columnaTmp<<endl;
     if(sentencia.find("WHERE")== string::npos){//select sin where
         string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.length());
+
+        if(nombreTmp.find(" ")==0){//estos if cortan los epacios sobrantes al inicio y al final
+            nombreTmp = nombreTmp.substr(1,nombreTmp.length());
+        }
+        if(nombreTmp.find(" ")==nombreTmp.length()-1){
+            nombreTmp = nombreTmp.substr(0,nombreTmp.length()-2);
+        }
+
         tabla *tablaTmp = new tabla(nombreTmp,"base de datos");
+
+
         if(_listaTablas->existeTabla(nombreTmp)){
             if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
                 tablaTmp = _listaTablas->buscarTabla(nombreTmp);
@@ -1782,13 +1970,14 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
             }
             else{
                 if(_listaTablas->buscarTabla(nombreTmp)->existeListaMetaDato(columnaTmp)){
-                    tablaTmp->setMetaDato(columnaTmp);
+
+                    tablaTmp->setMetaDatoSinTipo(columnaTmp);
                     //con el for se crean los registros de las columnas seleccionadas y se insertan a la tabla temporal
                     for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
                         ListaDato *registroTmp = new ListaDato();
                         for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
                             if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
-                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
+                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,_listaTablas->buscarTabla(nombreTmp)->getMetaDato()->PosMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())));
                             }
                         }
                         tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
@@ -1802,31 +1991,41 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
             }
 
         }
-        else{
+        if(!_listaTablas->existeTabla(nombreTmp)){
             return false;//error no existe la tabla
         }
     }
-    else{
-        string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.find("WHERE")-1);
+    if(sentencia.find("WHERE")!= string::npos){//caso con where
+
+        string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.find("WHERE")-sentencia.find("FROM")-5);
+        if(nombreTmp.find(" ")==0){
+            nombreTmp = nombreTmp.substr(1,nombreTmp.length());
+        }
+        if(nombreTmp.find(" ")==nombreTmp.length()-1){
+            nombreTmp = nombreTmp.substr(0,nombreTmp.length()-2);
+        }
+        cout<<"nombreTmp"<<nombreTmp<<endl;
+
         tabla *tablaTmp = new tabla(nombreTmp,"base de datos");
         if(_listaTablas->existeTabla(nombreTmp)){
             if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
                 columnaTmp = _listaTablas->buscarTabla(nombreTmp)->getMetaDato()->listaMetaDatoToString();
+                cout<<"columnaTmp:"<<columnaTmp<<endl;
                 tablaTmp->setMetaDato(columnaTmp);
 
                 for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
                     ListaDato *registroTmp = new ListaDato();
-                    for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
-                        if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
-                            if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
-                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
-                            }
-                            else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
-                                return false;//error en el where
-                            }
-                        }
+                    if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
+
+                        cout<<"cumplio where"<<endl;
+                        registroTmp=_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarListaEnPos(i);
+                        tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
                     }
-                    tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
+
+                    else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
+                        cout<<"ERROR where"<<endl;
+                        return false;//error en el where
+                    }
                 }
                 tablaTmp->imprimirTabla();
                 return true;
@@ -1834,21 +2033,20 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
             }
             else{
                 if(_listaTablas->buscarTabla(nombreTmp)->existeListaMetaDato(columnaTmp)){
-                    tablaTmp->setMetaDato(columnaTmp);
-
+                    tablaTmp->setMetaDatoSinTipo(columnaTmp);
                     for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
                         ListaDato *registroTmp = new ListaDato();
-                        for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
-                            if(_listaTablas->buscarTabla(nombreTmp)->existeMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())){
-                                if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
-                                    registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,j));
-                                }
-                                else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
-                                    return false;//error en el where
-                                }
+                        if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
+
+                            for(int j = 0; j<tablaTmp->getMetaDato()->getTamanio();j++){
+
+                                registroTmp->insertarFinal(_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarDatoEnPos(i,_listaTablas->buscarTabla(nombreTmp)->getMetaDato()->PosMetaDato(tablaTmp->getMetaDato()->buscarPosicion(j)->getmetaDato())));
                             }
+                            tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
                         }
-                        tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
+                        else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
+                            return false;//error en el where
+                        }
                     }
                     tablaTmp->imprimirTabla();
                     return true;
@@ -1864,7 +2062,6 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
             return false;//error no existe la tabla
         }
     }
-
 }
 
 bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
@@ -1881,11 +2078,11 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
         string columnas = sentencia.substr(sentencia.find("(")+1,sentencia.find(")")-sentencia.find("(")-1);
         string token1 = sentencia.substr(sentencia.find("VALUES")+5,sentencia.length());
         string valores = token1.substr(token1.find("(")+1,token1.find(")")-token1.find("(")-1);
-        ListaDato *listaTmp = new ListaDato;
         tabla * tablaTmp = _listaTablas->buscarTabla(nombre);
+        ListaDato *listaTmp = new ListaDato(tablaTmp->getMetaDato()->getTamanio());
 
         while(columnas.find(",")!= string::npos){
-            string col = columnas.substr(0,columnas.find(",")-1);
+            string col = columnas.substr(0,columnas.find(","));
             if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
                 col = col.substr(1,col.length());
             }
@@ -1893,7 +2090,7 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 col = col.substr(0,col.length()-2);
             }
 
-            string celda = valores.substr(0,valores.find(",")-1);
+            string celda = valores.substr(0,valores.find(","));
             if(celda.find(" ")==0){//estos if cortan espacios al inicio y al final
                 celda = celda.substr(1,celda.length());
             }
@@ -1901,21 +2098,23 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 celda = celda.substr(0,celda.length()-2);
             }
 
-
             if(existeColumna(tablaTmp,col)){
-
                 if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Integer")==0){
                     std::string str = celda;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
-                    test.toInt(ok);
+                    bool ok;
+                    cout<<test.toInt(&ok)<<endl;
+                    cout<<ok<<endl;
                     if(ok){
-                        listaTmp->insertarFinal(celda);
+                        int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                        listaTmp->setDato(pos,celda);
                         columnas = columnas.substr(columnas.find(",")+1,columnas.length());
                         valores = valores.substr(valores.find(",")+1,valores.length());
 
+
                     }
                     else{
+                        cout<<"error no se introdujo un int"<<endl;
                         return false;//error no introdujo un int
                     }
 
@@ -1924,10 +2123,11 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Decimal")==0){
                     std::string str = celda;
                     QString test = QString::fromStdString(str);
-                    bool *ok;
-                    test.toFloat(ok);
+                    bool ok;
+                    test.toFloat(&ok);
                     if(ok){
-                        listaTmp->insertarFinal(celda);
+                        int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                        listaTmp->setDato(pos,celda);
                         columnas = columnas.substr(columnas.find(",")+1,columnas.length());
                         valores = valores.substr(valores.find(",")+1,valores.length());
 
@@ -1938,14 +2138,17 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 }
 
                 if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("String")==0){
-                    listaTmp->insertarFinal(celda);
+                    int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                    listaTmp->setDato(pos,celda);
                     columnas = columnas.substr(columnas.find(",")+1,columnas.length());
                     valores = valores.substr(valores.find(",")+1,valores.length());
+
                     //no se valida ya que un string puede tener caracteres numericos
                 }
 
             }
             if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
+                cout<<"error no existe columna"<<endl;
                 return false;//error no existe la columna
             }
 
@@ -1972,15 +2175,19 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 
 
         if(existeColumna(tablaTmp,col)){
-
             if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Integer")==0){
                 std::string str = celda;
                 QString test = QString::fromStdString(str);
-                bool *ok;
-                test.toInt(ok);
+                bool ok;
+                cout<<test.toInt(&ok)<<endl;
                 if(ok){
-                    listaTmp->insertarFinal(celda);
+
+                    int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                    listaTmp->setDato(pos,celda);
                     tablaTmp->insertarRegistro(listaTmp);
+
+
+                    tablaTmp->imprimirTabla();
                     return true;
                 }
                 else{
@@ -1991,11 +2198,15 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
             if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("Decimal")==0){
                 std::string str = celda;
                 QString test = QString::fromStdString(str);
-                bool *ok;
-                test.toFloat(ok);
+                bool ok;
+                test.toFloat(&ok);
                 if(ok){
-                    listaTmp->insertarFinal(celda);
+                    int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                    listaTmp->setDato(pos,celda);
                     tablaTmp->insertarRegistro(listaTmp);
+
+
+                    tablaTmp->imprimirTabla();
                     return true;
 
                 }
@@ -2005,8 +2216,13 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
             }
 
             if(tablaTmp->getMetaDato()->buscarPosicion(tablaTmp->getMetaDato()->PosMetaDato(col))->getTipometaDato().compare("String")==0){
-                listaTmp->insertarFinal(celda);
+
+                int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
+                listaTmp->setDato(pos,celda);
                 tablaTmp->insertarRegistro(listaTmp);
+
+
+                tablaTmp->imprimirTabla();
                 return true;
                 //no se valida la conversion ya que un string puede tener caracteres numericos
             }
@@ -2015,8 +2231,6 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
         if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
             return false;//error no existe la columna
         }
-
-
 
 
     }
