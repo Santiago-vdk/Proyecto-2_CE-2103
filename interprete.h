@@ -47,7 +47,7 @@ private:
     void generarTabla(string pName);
 
     listaTabla * _listaTablas;
-
+    bool _revisandoColumna;
 
 };
 

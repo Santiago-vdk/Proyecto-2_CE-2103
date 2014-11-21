@@ -11,6 +11,7 @@ Interprete::Interprete()
     cargaTablas();
     sis = new sistemaArchivos();
     _listaTablas = new listaTabla();
+    _revisandoColumna = false;
 
 }
 
@@ -118,8 +119,16 @@ bool Interprete::nombreValido(string nombre)
                 (nombre.find("\"")==string::npos)&&(nombre.find(".")==string::npos)&&
                 (nombre.find(";")==string::npos) &&
                 (nombre.find(":")==string::npos)){//condicion agregada
-            return true;
-
+            if(!_revisandoColumna){
+                return true;
+            }
+            if(_revisandoColumna && nombre.length()<26){//las columnas tienen max 25 caracteres
+                _revisandoColumna = false;
+                return true;
+            }
+            else{
+                return false;
+            }
         }
         else{
             return false;
@@ -148,7 +157,6 @@ bool Interprete::datoValido(string dato)
 
 int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 {
-    cout<<"EntreWhere:"<<pcondiciones<<endl;
     string AndOr = "";
     int condicionAnterior = -1;
     string token1="";
@@ -179,11 +187,9 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
         }
         //********
-        cout<<"pcondicionesEnWhere:"<<pcondiciones<<endl;
 
         //********************** verifica los signos de comparacion
         if(token1.find("<>")!= string::npos){
-            cout<<"entre <>"<<endl;
             banderaEntreIf = true;
             string campo=token1.substr(0,token1.find("<>")-1);
             if(campo.find(" ")==0){
@@ -199,8 +205,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             if(valor.find(" ")==valor.length()-1){
                 valor=valor.substr(0,valor.length()-2);
             }
-
-            cout<<"campo:"<<campo<<" valor:"<<valor<<endl;
             if(ptabla->existeMetaDato(campo)){
                 if(condicionAnterior ==-1){
 
@@ -265,8 +269,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
 
             if(ptabla->existeMetaDato(campo)){
-                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
@@ -390,8 +394,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
 
             if(ptabla->existeMetaDato(campo)){
-                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
                     bool ok;
@@ -511,8 +515,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
 
             if(ptabla->existeMetaDato(campo)){
-                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
                     bool ok;
@@ -632,8 +636,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
 
             if(ptabla->existeMetaDato(campo)){
-                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+                if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                        ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                     std::string str = valor;
                     QString test = QString::fromStdString(str);
                     bool ok;
@@ -808,7 +812,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
  //duplicar el codigo del while para la evaluacion final y hacer el return
 
     token1 = pcondiciones;
-    cout<<"token1FueraWhile:"<<token1<<endl;
 
     if(token1.find("<>")!= string::npos){
         banderaEntreIf = true;
@@ -889,8 +892,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         }
 
         if(ptabla->existeMetaDato(campo)){
-            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
 
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
@@ -1011,8 +1014,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         }
 
         if(ptabla->existeMetaDato(campo)){
-            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
                 bool ok;
@@ -1083,6 +1086,7 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 if(!ok){
                     if(valor.compare("~")==0){//caso de espacio vacio en columna se toma como que no cumple condicion
                         if(condicionAnterior ==-1){
+
                             condicionAnterior=0;
                         }
                         else{
@@ -1130,10 +1134,9 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(valor.find(" ")==valor.length()-1){
             valor=valor.substr(0,valor.length()-2);
         }
-
         if(ptabla->existeMetaDato(campo)){
-            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
                 bool ok;
@@ -1142,7 +1145,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                 int valorIntEnTabla;
                 float valorFloatEnTabla;
                 string banderaIntFloat;
-
                 if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0){
                     banderaIntFloat = "Integer";
                     testInt = test.toInt(&ok);//convierte el valor que se desea comparar a int
@@ -1163,7 +1165,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 }
                 if(ok){
-
                     if(condicionAnterior ==-1){
                         if((banderaIntFloat.compare("Integer")==0 && valorIntEnTabla>testInt)|| (banderaIntFloat.compare("Decimal")==0 && valorFloatEnTabla>testFloat)){
                             condicionAnterior=1;
@@ -1253,8 +1254,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         }
 
         if(ptabla->existeMetaDato(campo)){
-            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Integer") ==0 ||
-                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getmetaDato().compare("Decimal") ==0){
+            if(ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Integer") ==0 ||
+                    ptabla->getMetaDato()->buscarPosicion(ptabla->getMetaDato()->PosMetaDato(campo))->getTipometaDato().compare("Decimal") ==0){
                 std::string str = valor;
                 QString test = QString::fromStdString(str);
                 bool ok;
@@ -1372,7 +1373,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         if(valor.find(" ")==valor.length()-1){
             valor=valor.substr(0,valor.length()-2);
         }
-        cout<<"=fueradelWhere:"<<AndOr<<"condicionAnterior:"<<condicionAnterior<<endl;
         if(ptabla->existeMetaDato(campo)){
             if(condicionAnterior ==-1){
                 if(ptabla->getMatrizDato()->buscarDatoEnPos(ppos,ptabla->getMetaDato()->PosMetaDato(campo)).compare(valor)==0){
@@ -1422,7 +1422,6 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
     if(!banderaEntreIf){
         return -1;//no se encontro operando valido
     }
-
 }//cierra funcion cumpleWhere
 
 
@@ -1442,6 +1441,7 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                     string token2=sentencia.substr(sentencia.find("(")+1,sentencia.length()-1);
                     while(token2.find(",")!=string::npos){
                         if(token2.find(":")!=string::npos && token2.find(":")<token2.find(",")){
+                            _revisandoColumna = true;
                             string tokenColumna = token2.substr(0,token2.find(":"));
                             string tokenDato = token2.substr(token2.find(":")+1,token2.find(",")-token2.find(":")-1);
                             if(nombreValido(tokenColumna) && datoValido(tokenDato)){
@@ -1602,11 +1602,9 @@ bool Interprete::revisarInsert(string sentencia)//se revisa sintaxis de insert
                                 string token2 = sentencia.substr(sentencia.find("(",sentencia.find("VALUES")),sentencia.find(")",sentencia.find("VALUES"))-sentencia.find("(",sentencia.find("VALUES")));
 
                                 while(token1.find(",")!=string::npos && token2.find(",")!=string::npos){
-                                    cout<<"token1:"<<token1<<" token2:"<<token2<<endl;
                                     token1 = token1.substr(token1.find(",")+1, token1.length());
                                     token2 = token2.substr(token2.find(",")+1, token2.length());
                                 }
-                                cout<<"token1:"<<token1<<" token2:"<<token2<<endl;
                                 if(token1.find(",")==string::npos && token2.find(",")==string::npos){
 
                                     return true;//misma cantidad de comas en el set y los values
@@ -1945,7 +1943,6 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
     if(columnaTmp.find(" ")==columnaTmp.length()-1){
         columnaTmp = columnaTmp.substr(0,columnaTmp.length()-1);
     }
-    cout<<"entreSelect:"<<columnaTmp<<endl;
     if(sentencia.find("WHERE")== string::npos){//select sin where
         string nombreTmp = sentencia.substr(sentencia.find("FROM")+4,sentencia.length());
 
@@ -2004,13 +2001,11 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
         if(nombreTmp.find(" ")==nombreTmp.length()-1){
             nombreTmp = nombreTmp.substr(0,nombreTmp.length()-2);
         }
-        cout<<"nombreTmp"<<nombreTmp<<endl;
 
         tabla *tablaTmp = new tabla(nombreTmp,"base de datos");
         if(_listaTablas->existeTabla(nombreTmp)){
             if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
                 columnaTmp = _listaTablas->buscarTabla(nombreTmp)->getMetaDato()->listaMetaDatoToString();
-                cout<<"columnaTmp:"<<columnaTmp<<endl;
                 tablaTmp->setMetaDato(columnaTmp);
 
                 for(int i = 0;i<_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->getTamanio();i++){
@@ -2074,7 +2069,6 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
         nombre = nombre.substr(0,nombre.length()-2);
     }
     if(_listaTablas->existeTabla(nombre)){
-
         string columnas = sentencia.substr(sentencia.find("(")+1,sentencia.find(")")-sentencia.find("(")-1);
         string token1 = sentencia.substr(sentencia.find("VALUES")+5,sentencia.length());
         string valores = token1.substr(token1.find("(")+1,token1.find(")")-token1.find("(")-1);
@@ -2103,8 +2097,7 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                     std::string str = celda;
                     QString test = QString::fromStdString(str);
                     bool ok;
-                    cout<<test.toInt(&ok)<<endl;
-                    cout<<ok<<endl;
+                    test.toInt(&ok);
                     if(ok){
                         int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
                         listaTmp->setDato(pos,celda);
@@ -2179,7 +2172,7 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 std::string str = celda;
                 QString test = QString::fromStdString(str);
                 bool ok;
-                cout<<test.toInt(&ok)<<endl;
+                test.toInt(&ok);
                 if(ok){
 
                     int pos = tablaTmp->getMetaDato()->PosMetaDato(col);
@@ -2243,6 +2236,7 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
 {
 
     string nombre = sentencia.substr(6,sentencia.find("SET")-7);
+
     if(nombre.find(" ")==0){//estos if cortan espacios al inicio y al final
         nombre = nombre.substr(1,nombre.length());
     }
@@ -2251,35 +2245,38 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
     }
     if(_listaTablas->existeTabla(nombre)){
         tabla * tablaTmp = _listaTablas->buscarTabla(nombre);
-        if(sentencia.find("WHERE")!= string::npos==0){
+        if(sentencia.find("WHERE")!= string::npos){//caso con where
 
             string cambios = sentencia.substr(sentencia.find("SET")+4,sentencia.find("WHERE")-sentencia.find("SET")-5);
             string where = sentencia.substr(sentencia.find("WHERE")+6,sentencia.length());
+
             for(int i = 0;i<tablaTmp->getMatrizDato()->getTamanio();i++){//recorre todos los registros
                 string token1 = cambios;
-                while(token1.find("=")!=string::npos){//recorre los cambios que se desean realizar en cada registro
-                    if(cumpleWhere(tablaTmp,where,i)){//si no cumple las condiciones del where salta al siguiente registro
+                if(cumpleWhere(tablaTmp,where,i)){//si no cumple las condiciones del where salta al siguiente registro
+
+                    while(token1.find("=")!=string::npos){//recorre los cambios que se desean realizar en cada registro
+
                         string col = token1.substr(0,token1.find("=")-1);
                         if(col.find(" ")==0){//estos if cortan espacios al inicio y al final
                             col = col.substr(1,col.length());
                         }
                         if(col.find(" ")==col.length()-1){
-                            col = col.substr(0,col.length()-2);
+                            col = col.substr(0,col.length()-1);
                         }
 
                         string valor = "";//se define asi para poder utilizar la variable en otros if
 
-                        if(token1.find(",")!=string::npos){//asignacion de valores a variables col y valores cuando
+                        if(token1.find(",")!=string::npos){
 
                             valor = token1.substr(token1.find("=")+1,token1.find(",")-1-token1.find("="));
                             if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
                                 valor = valor.substr(1,valor.length());
                             }
                             if(valor.find(" ")==valor.length()-1){
-                                valor = valor.substr(0,valor.length()-2);
+                                valor = valor.substr(0,valor.length()-1);
                             }
                         }
-                        if(token1.find(",")==string::npos){//asignacion de valores a variables col y valores cuando
+                        if(token1.find(",")==string::npos){
 
                             valor = token1.substr(token1.find("=")+1,token1.length());
                             if(valor.find(" ")==0){//estos if cortan espacios al inicio y al final
@@ -2289,28 +2286,32 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                                 valor = valor.substr(0,valor.length()-2);
                             }
                         }
-
                         if(tablaTmp->existeMetaDato(col)){
                             int j = tablaTmp->getMetaDato()->PosMetaDato(col);
                             tablaTmp->getMatrizDato()->setDato(i,j,valor);
-                            token1 = token1.substr(token1.find(",")+1,token1.length());
 
                         }
                         if(!tablaTmp->existeMetaDato(col)){
                             return false;//error no existe la columna
                         }
+                        if(token1.find(",")==string::npos){
+                            token1 = "";
+                        }
+                        if(token1.find(",")!=string::npos){
+                            token1 = token1.substr(token1.find(",")+1,token1.length());
+                        }
 
                     }
-
                 }
             }
-
-
+            tablaTmp->imprimirTabla();
+            return true;
 
 
         }
         else{//caso sin where
             string cambios = sentencia.substr(sentencia.find("SET")+4,sentencia.length());
+
             for(int i = 0;i<tablaTmp->getMatrizDato()->getTamanio();i++){//recorre todos los registros
                 string token1 = cambios;
                 while(token1.find("=")!=string::npos){//recorre los cambios que se desean realizar en cada registro
@@ -2320,7 +2321,7 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                         col = col.substr(1,col.length());
                     }
                     if(col.find(" ")==col.length()-1){
-                        col = col.substr(0,col.length()-2);
+                        col = col.substr(0,col.length()-1);
                     }
 
                     string valor = "";
@@ -2331,9 +2332,10 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                             valor = valor.substr(1,valor.length());
                         }
                         if(valor.find(" ")==valor.length()-1){
-                            valor = valor.substr(0,valor.length()-2);
+                            valor = valor.substr(0,valor.length()-1);
                         }
                     }
+
                     if(token1.find(",")==string::npos){//asignacion de valores a variables col y valores cuando
 
                         valor = token1.substr(token1.find("=")+1,token1.length());
@@ -2341,24 +2343,30 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                             valor = valor.substr(1,valor.length());
                         }
                         if(valor.find(" ")==valor.length()-1){
-                            valor = valor.substr(0,valor.length()-2);
+                            valor = valor.substr(0,valor.length()-1);
                         }
                     }
-
                     if(tablaTmp->existeMetaDato(col)){
                         int j = tablaTmp->getMetaDato()->PosMetaDato(col);
                         tablaTmp->getMatrizDato()->setDato(i,j,valor);
-                        token1 = token1.substr(token1.find(",")+1,token1.length());
+
 
                     }
                     if(!tablaTmp->existeMetaDato(col)){
                         return false;//error no existe la columna
                     }
-
+                    if(token1.find(",")==string::npos){
+                        token1 = "";
+                    }
+                    if(token1.find(",")!=string::npos){
+                        token1 = token1.substr(token1.find(",")+1,token1.length());
+                    }
 
 
                 }
+
             }
+            tablaTmp->imprimirTabla();
             return true;
 
 
@@ -2386,15 +2394,20 @@ bool Interprete::ejecutarDelete(string sentencia)//se ejecuta delete
     }
 
     if(_listaTablas->existeTabla(nombre)){
+        int i=0;
 
         tabla* tablaTmp = _listaTablas->buscarTabla(nombre);
         string condiciones = sentencia.substr(sentencia.find("WHERE")+5,sentencia.length());
-        for(int i=0;i<tablaTmp->getMatrizDato()->getTamanio();i++){
+        while(i<tablaTmp->getMatrizDato()->getTamanio()){
 
             if(cumpleWhere(tablaTmp,condiciones,i)){
                 tablaTmp->getMatrizDato()->deleteLista(i);
             }
+            else{
+                i++;
+            }
         }
+        tablaTmp->imprimirTabla();
         return true;
 
 

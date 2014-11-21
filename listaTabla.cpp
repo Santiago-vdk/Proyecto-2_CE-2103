@@ -70,6 +70,7 @@ bool listaTabla::existeTabla(string pnombre)
         if (tmp->getTabla()->getNombre().compare(pnombre)==0){
             return true;
         }
+        tmp = tmp->getTablaNext();
     }
     return false;
 }
