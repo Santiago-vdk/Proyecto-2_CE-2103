@@ -14,10 +14,8 @@ public:
     ListaDato *buscarListaEnPos(int ppos);
     string buscarDatoEnPos(int i,int j);
 
-    void setDato(int i, int j, string pDato);
-    void deleteLista(int i);
-
-private:
+ void imprimirMatriz();    void setDato(int i, int j, string pDato);
+    void deleteLista(int i);private:
     int _tamanio;
     ListaDato *_head;
     ListaDato *_tail;

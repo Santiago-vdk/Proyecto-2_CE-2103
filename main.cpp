@@ -22,5 +22,11 @@ int main(int argc, char *argv[])
 //        cout<<"entre ok"<<endl;
 //    }
 
+
+
+
+
+
+
     return a.exec();
 }
