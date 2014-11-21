@@ -12,6 +12,7 @@ public:
     Interprete();
     bool revisarSintaxis(string sentencia);
     bool ejecutar(string sentencia);
+    tabla *getTablaTmp();
 
 private:
 
@@ -46,9 +47,17 @@ private:
     sistemaArchivos *sis;
     void generarTabla(string pName);
 
+    void crearArchivoTabla();
+    void actualizarArchivoTabla();
+
     listaTabla * _listaTablas;
     bool _revisandoColumna;
+    tabla *_tablaTmp;
 
 };
+
+
+
+
 
 #endif // INTERPRETE_H

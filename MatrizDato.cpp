@@ -38,6 +38,19 @@ void MatrizDato::insertarFinal(ListaDato *plista)
     _tamanio++;
 }
 
+string MatrizDato::listaToString(int i)
+{
+    NodoDato *tmp = buscarListaEnPos(i)->getHead();
+    string result = "";
+    for(int a=0;a<i;a++){
+        result.append(tmp->getDato());
+        result.append(",");
+        tmp = tmp->getNext();
+    }
+    result = result.substr(0,result.length()-1);
+    return result;
+}
+
 ListaDato *MatrizDato::buscarListaEnPos(int ppos)
 {
     if(ppos<_tamanio){
@@ -98,25 +111,30 @@ void MatrizDato::setDato(int i, int j,string pDato)
 void MatrizDato::deleteLista(int i)
 {
     if(i==0){
+        cout<<"entre 0"<<endl;
         _head->getNext()->setPrev(NULL);
         _head = _head->getNext();
         _tamanio--;
     }
-    else if(i=_tamanio-1){
+    else if(i==_tamanio-1){
+        cout<<"entre tam"<<endl;
         _tail->getPrev()->setNext(NULL);
         _tail = _tail->getPrev();
         _tamanio--;
     }
 
     else{
-
+        cout<<"borrando"<<endl;
         ListaDato *tmp = _head;
         for(int a=0;a<i;a++){
             tmp = tmp->getNext();
+            cout<<"a"<<a<<endl;
         }
         tmp->getPrev()->setNext(tmp->getNext());
         tmp->getNext()->setPrev(tmp->getPrev());
         _tamanio--;
-
+        cout<<"borrando:"<<tmp->buscarDatoEnPos(0);
     }
+
+}
 

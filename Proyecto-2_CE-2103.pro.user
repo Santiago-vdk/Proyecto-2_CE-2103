@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.1.2, 2014-11-14T11:27:22. -->
+<!-- Written by QtCreator 3.1.2, 2014-11-21T10:53:31. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -57,11 +57,11 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop Qt 5.3 MinGW 32bit</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop Qt 5.3 MinGW 32bit</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">qt.53.win32_mingw482_kit</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">1</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:/Users/yo/Desktop/CE-2103/build-Proyecto-2_CE-2103-Desktop_Qt_5_3_MinGW_32bit-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:/Users/Shagy/Desktop/build-Proyecto-2_CE-2103-Desktop_Qt_5_3_MinGW_32bit-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -114,7 +114,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:/Users/Shagy/Desktop/build-Proyecto-2_CE-2103-Desktop_Qt_5_3_MinGW_32bit-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:/Users/Shagy/Desktop/build</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -220,7 +220,7 @@
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Proyecto-2_CE-2103</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/Users/yo/Desktop/CE-2103/Proyecto-2_CE-2103/Proyecto-2_CE-2103.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/Users/Shagy/Desktop/Proyecto-2_CE-2103/Proyecto-2_CE-2103.pro</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments"></value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">Proyecto-2_CE-2103.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
@@ -242,7 +242,7 @@
  </data>
  <data>
   <variable>ProjectExplorer.Project.Updater.EnvironmentId</variable>
-  <value type="QByteArray">{065117fa-3c2b-4028-b06f-3f22c92ce0e7}</value>
+  <value type="QByteArray">{0930ff1f-6c6e-4226-9123-79287ddaef67}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.Updater.FileVersion</variable>

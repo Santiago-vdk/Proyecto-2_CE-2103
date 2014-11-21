@@ -1,31 +1,19 @@
 #include "GUI.h"
 #include <QApplication>
 #include "iostream"
+
+#include "compress.h"
 using namespace std;
 
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-//    QString test(" saasdfasf");
-//    test.toInt();
-
+ QApplication a(argc, argv);
     GUI w;
-    w.show();
+     w.show();
 
-//    std::string str = ";lhui";
-//    QString test = QString::fromStdString(str);
-//    bool ok;
-//    cout<<test.toInt(&ok)<<endl;
-//    cout<<ok<<endl;
-//    if(ok){
-//        cout<<"entre ok"<<endl;
-//    }
-
-
-
-
-
+   // compress archivo("/prueba.txt","/prueba.zip");
+    //archivo.encode();
 
 
     return a.exec();

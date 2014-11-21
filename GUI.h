@@ -8,6 +8,13 @@
 #include <QList>
 #include <QString>
 #include "facade.h"
+#include <tabla.h>
+#include <QStandardItemModel>
+#include <QHeaderView>
+#include <MatrizDato.h>
+#include <ListaMetaDato.h>
+#include <metaDato.h>
+
 
 
 namespace Ui {
@@ -33,8 +40,8 @@ private slots:
     void on_input_returnPressed();
     void on_copyClipboard_clicked();
     void vistaArbol();
-    void on_pushButton_clicked();
     void crearPalabrasReservadas();
+    void refrescaTabla();
 
 private:
     Ui::GUI *ui;
@@ -46,10 +53,15 @@ private:
     QList<QString> listaPalabrasReservadas;
     QList<QString> listaTiposReservados;
     Facade *facade;
+    tabla *tablaVisual;
 
+    //Tabla Visual
+    QStandardItemModel model;
+    QModelIndex modelIndex;
+    QStringList horizontalHeader;
 
-
-
+    ListaMetaDato *_header;
+    MatrizDato *_infoTabla;
 
 };
 

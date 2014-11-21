@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
 
 TARGET = Proyecto-2_CE-2103
 TEMPLATE = app
@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     sistemaArchivos.cpp \
     NodoDato.cpp \
     MatrizDato.cpp \
-    ListaDato.cpp
+    ListaDato.cpp \
+    com.cpp
 
 HEADERS  += \
     facade.h \
@@ -49,7 +50,8 @@ HEADERS  += \
     sistemaArchivos.h \
     NodoDato.h \
     MatrizDato.h \
-    ListaDato.h
+    ListaDato.h \
+    com.h
 
 FORMS    += \
     GUI.ui

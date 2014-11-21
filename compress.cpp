@@ -1,4 +1,7 @@
 #include "compress.h"
+#include "iostream"
+
+using namespace std;
 
 compress::compress(char *Dire,char *Dird)
 {
@@ -9,19 +12,23 @@ compress::compress(char *Dire,char *Dird)
 void compress::encode()
 {
     QFile infile(_Dire);
+
+    cout <<  _Dire << endl;
+
     QFile outfile(_Dird);
     if (infile.exists()){
-    infile.open(QIODevice::ReadOnly);
-    outfile.open(QIODevice::WriteOnly);
 
-    QByteArray uncompressedData = infile.readAll();
-    QByteArray compressedData = qCompress(uncompressedData);
+        infile.open(QIODevice::ReadOnly);
+        outfile.open(QIODevice::WriteOnly);
 
-    outfile.write(compressedData);
+        QByteArray uncompressedData = infile.readAll();
+        QByteArray compressedData = qCompress(uncompressedData);
 
-    infile.close();
-    outfile.close();
-    remove(_Dire);
+        outfile.write(compressedData);
+
+        infile.close();
+        outfile.close();
+        remove(_Dire);
     }
     else{
         QMessageBox messageBox;
@@ -34,17 +41,17 @@ void compress::decode()
     QFile outfile(_Dire);
     QFile infile(_Dird);
     if (infile.exists()){
-    infile.open(QIODevice::ReadOnly);
-    outfile.open(QIODevice::WriteOnly);
+        infile.open(QIODevice::ReadOnly);
+        outfile.open(QIODevice::WriteOnly);
 
-    QByteArray uncompressedData = infile.readAll();
-    QByteArray compressedData = qUncompress(uncompressedData);
+        QByteArray uncompressedData = infile.readAll();
+        QByteArray compressedData = qUncompress(uncompressedData);
 
-    outfile.write(compressedData);
+        outfile.write(compressedData);
 
-    infile.close();
-    outfile.close();
-    remove(_Dird);
+        infile.close();
+        outfile.close();
+        remove(_Dird);
     }
     else{
         QMessageBox messageBox;

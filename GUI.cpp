@@ -122,7 +122,12 @@ void GUI::on_botonEnviar_clicked()
         qDebug() << ui->input->text();
         if(facade->revizarSintaxis(comando)){
             qDebug() << "Funko";
-            facade->ejecutar(comando);
+            if(facade->ejecutar(comando)){
+                tablaVisual = facade->getTablaTmp();
+                refrescaTabla();
+
+            }
+
         }
 
         ui->output->append(ui->input->text());
@@ -205,25 +210,57 @@ void GUI::on_input_returnPressed()
         std::string comando = ui->input->text().toStdString();
         /*Se llama al parser con el comando ingresado
             * if (parser(comando))
+            * Luego implementar el comando grafico
            */
+        qDebug() << "aqui";
+        qDebug() << ui->input->text();
+        if(facade->revizarSintaxis(comando)){
+            qDebug() << "Funko";
+            facade->ejecutar(comando);
+            refrescaTabla();
+        }
+
         ui->output->append(ui->input->text());
         ui->input->clear();
-
-
-//Insercion de tabla nueva dentro arbol de tablas, deberia insertar dentro de una base de datos seleccionada
-//        QObject *tabla1 = new QObject( tablas );
-//        tabla1->setObjectName( "Tabla #1" );
-//        ui->vistaArbol->expandAll();
-
-
-
     }
     else{
         QMessageBox *empty =  new QMessageBox();
-        empty->setWindowTitle("Error");
         empty->setText("Error, por favor ingrese un comando.");
         empty->show();
     }
+}
+
+void GUI::refrescaTabla()
+{
+
+    model.clear();
+    horizontalHeader.clear();
+    ui->vistaTabla->reset();
+
+    qDebug("hey");
+
+    _header = facade->getTablaTmp()->getMetaDato();
+    _infoTabla = facade->getTablaTmp()->getMatrizDato();
+
+    //Insertamos los headers
+    for(int i = 0; i < _header->getTamanio(); i++){
+        horizontalHeader.append(QString::fromStdString(_header->buscarPosicion(i)->getmetaDato()));
+    }
+
+    for(int i = 0; i <_infoTabla->getTamanio(); i++){
+        for(int j = 0; j < _infoTabla->getHead()->getTamanio(); j++){
+            QStandardItem *item = new QStandardItem(QString::fromStdString(_infoTabla->buscarDatoEnPos(i,j)));
+            model.setItem(i, j, item);
+        }
+    }
+
+
+    model.index(1,1,model.index(0,0));
+    model.setHorizontalHeaderLabels(horizontalHeader);
+
+    ui->vistaTabla->setModel(&model);
+    ui->vistaTabla->resizeRowsToContents();
+    ui->vistaTabla->resizeColumnsToContents();
 }
 
 void GUI::on_copyClipboard_clicked()
@@ -243,19 +280,19 @@ void GUI::vistaArbol()
 
 }
 
-void GUI::on_pushButton_clicked()
-{
+//void GUI::on_pushButton_clicked()
+//{
 
-//    child = new QObject( tabla1 );
-//    child->setObjectName( "Mark" );
-//    child = new QObject( tabla1 );
-//    child->setObjectName( "Bob" );
-//    child = new QObject( tabla1 );
-//    child->setObjectName( "Kent" );
+//    //    child = new QObject( tabla1 );
+//    //    child->setObjectName( "Mark" );
+//    //    child = new QObject( tabla1 );
+//    //    child->setObjectName( "Bob" );
+//    //    child = new QObject( tabla1 );
+//    //    child->setObjectName( "Kent" );
 
-    ui->vistaArbol->expandAll();
+//    ui->vistaArbol->expandAll();
 
-}
+//}
 
 void GUI::crearPalabrasReservadas()
 {
@@ -277,6 +314,8 @@ void GUI::crearPalabrasReservadas()
     listaTiposReservados.append("Decimal");
 
 }
+
+
 
 
 GUI::~GUI()

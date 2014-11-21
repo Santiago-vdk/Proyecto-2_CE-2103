@@ -38,6 +38,7 @@ MatrizDato *tabla::getMatrizDato()
     return _matrizDato;
 }
 
+
 void tabla::insertarRegistro(ListaDato *pRegistro){
     _matrizDato->insertarFinal(pRegistro);
 }

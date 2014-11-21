@@ -11,6 +11,7 @@ public:
     ListaDato *getTail();
 
     void insertarFinal(ListaDato * plista);
+    string listaToString(int i);
     ListaDato *buscarListaEnPos(int ppos);
     string buscarDatoEnPos(int i,int j);
 

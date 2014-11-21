@@ -4,15 +4,18 @@
 #include <dirent.h>
 #include "nodoTabla.h"
 #include "tabla.h"
+#include "compress.h"
+#include <com.h>
 using namespace std;
 
 Interprete::Interprete()
 {
-    cargaTablas();
+
     sis = new sistemaArchivos();
     _listaTablas = new listaTabla();
     _revisandoColumna = false;
-
+    //cargaTablas(); //Error
+    _tablaTmp = new tabla("","Base d datos");
 }
 
 bool Interprete::revisarSintaxis(string sentencia)
@@ -48,6 +51,8 @@ bool Interprete::revisarSintaxis(string sentencia)
     }
     else{
         //aqui se deberia mostrar mensaje de error por no encontrar palabra reservada inicial
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 }
@@ -87,6 +92,11 @@ bool Interprete::ejecutar(string sentencia)
         //nunca deberia entrar aqui si las funciones revisar funcionar correctamente
         return false;
     }
+}
+
+tabla *Interprete::getTablaTmp()
+{
+    return _tablaTmp;
 }
 
 bool Interprete::existeTabla(string ptabla)
@@ -246,6 +256,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
             else{
                 //error no existe la columna
+                com Puerto;
+                Puerto.enviar("msg3");
                 return -1;
             }
         }
@@ -359,6 +371,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                             }
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg4");
                             return -1;//valor no es un numero
                         }
                     }
@@ -366,11 +380,15 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
 
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return -1; //error comparacion invalida
                 }
             }
             else{
                 //error no existe la columna
+                com Puerto;
+                Puerto.enviar("msg3");
                 return -1;
             }
         }
@@ -483,15 +501,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                             }
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg4");
                             return -1;//valor no es un numero
                         }
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return -1; //error comparacion invalida
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg3");
                 //error no existe la columna
                 return -1;
             }
@@ -604,15 +628,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                             }
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg4");
                             return -1;//valor no es un numero
                         }
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return -1; //error comparacion invalida
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg3");
                 //error no existe la columna
                 return -1;
             }
@@ -725,15 +755,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                             }
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg4");
                             return -1;//valor no es un numero
                         }
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return -1; //error comparacion invalida
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg3");
                 //error no existe la columna
                 return -1;
             }
@@ -796,10 +832,14 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
             }
             else{
                 //error no existe la columna
+                com Puerto;
+                Puerto.enviar("msg3");
                 return -1;
             }
         }
         if(!banderaEntreIf){
+            com Puerto;
+            Puerto.enviar("msg1");
             return -1;//no encontro operando valido
         }
         banderaEntreIf = false;
@@ -870,6 +910,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         }
         else{
             //error no existe la columna
+            com Puerto;
+            Puerto.enviar("msg3");
             return -1;
         }
     }
@@ -982,16 +1024,22 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return -1;//valor no es un numero
                     }
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg4");
                 return -1; //error comparacion invalida
             }
         }
         else{
             //error no existe la columna
+            com Puerto;
+            Puerto.enviar("msg3");
             return -1;
         }
     }
@@ -1104,15 +1152,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return -1;//valor no es un numero
                     }
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg4");
                 return -1; //error comparacion invalida
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg3");
             //error no existe la columna
             return -1;
         }
@@ -1222,15 +1276,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return -1;//valor no es un numero
                     }
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg4");
                 return -1; //error comparacion invalida
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg3");
             //error no existe la columna
             return -1;
         }
@@ -1343,15 +1403,21 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
                         }
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return -1;//valor no es un numero
                     }
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg3");
                 return -1; //error comparacion invalida
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg3");
             //error no existe la columna
             return -1;
         }
@@ -1413,6 +1479,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         }
         else{
             //error no existe la columna
+            com Puerto;
+            Puerto.enviar("msg3");
             return -1;
         }
     }
@@ -1420,6 +1488,8 @@ int Interprete::cumpleWhere(tabla *ptabla, string pcondiciones, int ppos)
         return condicionAnterior;
     }
     if(!banderaEntreIf){
+        com Puerto;
+        Puerto.enviar("msg1");
         return -1;//no se encontro operando valido
     }
 }//cierra funcion cumpleWhere
@@ -1449,11 +1519,16 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                             }
                             else{
                                 //nombre de columna o tipo de dato invalidos
+                                com Puerto;
+                                Puerto.enviar("msg1");
+
                                 return false;
                             }
                         }
                         else{
                             //error con : o ,
+                            com Puerto;
+                            Puerto.enviar("msg1");
                             return false;
                         }
                     }
@@ -1464,6 +1539,8 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
                     }
                     else{
                         //nombre de columna o tipo de dato invalidos
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;
                     }
 
@@ -1476,16 +1553,22 @@ bool Interprete::revisarCreateTable(string sentencia)//se revisa sintaxis de cre
             }
             else{
                 //nombre invalido
+                com Puerto;
+                Puerto.enviar("msg1");
                 return false;
             }
         }
         else{
             //no abre parentesis
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;
         }
     }
     else{
         //error no se dejo espacio luego de la palabra reservada
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 
@@ -1523,34 +1606,48 @@ bool Interprete::revisarSelect(string sentencia)//se revisa sintaxis de select
                                             }
 
                                             else{
+                                                com Puerto;
+                                                Puerto.enviar("msg1");
                                                 return false;//falta palabra reservada OR o AND
                                             }
 
                                         }
                                         else{
+                                            com Puerto;
+                                            Puerto.enviar("msg1");
                                             return false;//espacios faltantes o indebidos
                                         }
                                     }
                                     else{
+                                        com Puerto;
+                                        Puerto.enviar("msg1");
                                         return false;//operador invalido
                                     }
                                 }
                                 else{
+                                    com Puerto;
+                                    Puerto.enviar("msg1");
                                     return false;//espacios de mas o no dejo espacios
                                 }
 
                             }
                             else{
+                                com Puerto;
+                                Puerto.enviar("msg1");
                                 return false;//espacios de mas o no dejo espacios
                             }
 
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg1");
                             return false;//errores en las comparaciones
                         }
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg1");
                     return false;
                 }
             }
@@ -1564,23 +1661,31 @@ bool Interprete::revisarSelect(string sentencia)//se revisa sintaxis de select
                     }
                     else{
                         //sobran espacios
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;
                     }
                 }
 
                 else{
                     //faltan espacios
+                    com Puerto;
+                    Puerto.enviar("msg1");
                     return false;
                 }
             }
 
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;
         }
 
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 
@@ -1610,36 +1715,52 @@ bool Interprete::revisarInsert(string sentencia)//se revisa sintaxis de insert
                                     return true;//misma cantidad de comas en el set y los values
                                 }
                                 else{
+                                    com Puerto;
+                                    Puerto.enviar("msg1");
                                     return false;
                                 }
 
                             }
                             else{
+                                com Puerto;
+                                Puerto.enviar("msg1");
                                 return false;//caracteres luego de cerrar segundo parentesis
                             }
 
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg1");
                             return false;//no cerro segundo parentesis o parentesis vacios
                         }
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;//no abrio segundo parentesis
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg1");
                     return false;//no se encontro la palabra reservada VALUES
                 }
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg1");
                 return false;//error no cerro parentesis
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;//error no abre abrir parentesis
         }
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 
@@ -1662,6 +1783,8 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
                         }
                     }
                     else if(igualaciones.find(" ",igualaciones.find("=")+2)!=string::npos){
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;//error espacios de mas
                     }
                     else{
@@ -1669,6 +1792,8 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
                     }
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg1");
                     return false;// falta signo =
                 }
             }
@@ -1698,29 +1823,41 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
                                         }
 
                                         else{
+                                            com Puerto;
+                                            Puerto.enviar("msg1");
                                             return false;//falta palabra reservada OR o AND
                                         }
 
                                     }
                                     else{
+                                        com Puerto;
+                                        Puerto.enviar("msg1");
                                         return false;//espacios faltantes o indebidos
                                     }
                                 }
                                 else{
+                                    com Puerto;
+                                    Puerto.enviar("msg1");
                                     return false;//operador invalido
                                 }
                             }
                             else{
+                                com Puerto;
+                                Puerto.enviar("msg1");
                                 return false;//espacios de mas o no dejo espacios
                             }
 
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg1");
                             return false;//espacios de mas o no dejo espacios
                         }
 
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;//errores en las comparaciones
                     }
                 }
@@ -1731,10 +1868,14 @@ bool Interprete::revisarUpdate(string sentencia)//se revisa sintaxis de update
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;//falta palabra reservada SET
         }
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;//no dejo espacio luego de palabra reservada
     }
 }
@@ -1768,39 +1909,55 @@ bool Interprete::revisarDelete(string sentencia)//se revisa sintaxis de delete
                                     }
 
                                     else{
+                                        com Puerto;
+                                        Puerto.enviar("msg1");
                                         return false;//falta palabra reservada OR o AND
                                     }
 
                                 }
                                 else{
+                                    com Puerto;
+                                    Puerto.enviar("msg1");
                                     return false;//espacios faltantes o indebidos
                                 }
                             }
                             else{
+                                com Puerto;
+                                Puerto.enviar("msg1");
                                 return false;//operador invalido
                             }
                         }
                         else{
+                            com Puerto;
+                            Puerto.enviar("msg1");
                             return false;//espacios de mas o no dejo espacios
                         }
 
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg1");
                         return false;//espacios de mas o no dejo espacios
                     }
 
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg1");
                     return false;//errores en las comparaciones
                 }
             }
             return true;
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;//no se encontro palabra reservada WHERE
         }
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;//no dejo espacio luego de frase reservada inicial
     }
 }
@@ -1820,15 +1977,21 @@ bool Interprete::revisarCreateIndex(string sentencia)//se revisa sintaxis de cre
                 return true;
             }
             else{
+                com Puerto;
+                Puerto.enviar("msg1");
                 return false;
             }
 
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg1");
             return false;
         }
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 }
@@ -1839,6 +2002,8 @@ bool Interprete::revisarCompress(string sentencia)//se revisa sintaxis de compre
         return true;
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 
@@ -1850,6 +2015,8 @@ bool Interprete::revisarBackup(string sentencia)//se revisa sintaxis de backup
         return true;
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 
@@ -1861,6 +2028,8 @@ bool Interprete::revisarRestore(string sentencia)//se revisa sintaxis de restore
         return true;
     }
     else{
+        com Puerto;
+        Puerto.enviar("msg1");
         return false;
     }
 }
@@ -1882,7 +2051,9 @@ bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
     }
     if(existeTabla(nombre)){
         //error ya existe tabla con ese nombre
-        cout<<"ya existe la tabla"<<endl;
+        com Puerto;
+        Puerto.enviar("msg5");
+        return false;
     }
     else{
         _listaTablas->insertarFinal(nombre,"base de datos");
@@ -1927,7 +2098,11 @@ bool Interprete::ejecutarCreateTable(string sentencia)//se ejecuta create table
         }
 
         _listaTablas->getTail()->getTabla()->agregarMetaDatos(columna,tipoDato);
+        _tablaTmp = _listaTablas->getTail()->getTabla();
         _listaTablas->imprimirTablas();
+        crearArchivoTabla();
+        return true;
+
 
     }
 }
@@ -1960,6 +2135,7 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
             if(columnaTmp.compare("*")==0){//caso que selecciona todas las columnas de la tabla
                 tablaTmp = _listaTablas->buscarTabla(nombreTmp);
 
+                _tablaTmp = tablaTmp;
                 tablaTmp->imprimirTabla();//por el momento solo imprime
 
                 return true;
@@ -1979,16 +2155,21 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
                         }
                         tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
                     }
+                    _tablaTmp = tablaTmp;
                     tablaTmp->imprimirTabla();
                     return true;
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg3");
                     return false;
                 }
             }
 
         }
         if(!_listaTablas->existeTabla(nombreTmp)){
+            com Puerto;
+            Puerto.enviar("msg2");
             return false;//error no existe la tabla
         }
     }
@@ -2012,16 +2193,16 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
                     ListaDato *registroTmp = new ListaDato();
                     if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==1){
 
-                        cout<<"cumplio where"<<endl;
                         registroTmp=_listaTablas->buscarTabla(nombreTmp)->getMatrizDato()->buscarListaEnPos(i);
                         tablaTmp->getMatrizDato()->insertarFinal(registroTmp);
                     }
 
                     else if(cumpleWhere(_listaTablas->buscarTabla(nombreTmp),sentencia.substr(sentencia.find("WHERE")+5,sentencia.length()),i)==-1){
-                        cout<<"ERROR where"<<endl;
+
                         return false;//error en el where
                     }
                 }
+                _tablaTmp = tablaTmp;
                 tablaTmp->imprimirTabla();
                 return true;
 
@@ -2043,17 +2224,22 @@ bool Interprete::ejecutarSelect(string sentencia)//se ejecuta select
                             return false;//error en el where
                         }
                     }
+                    _tablaTmp = tablaTmp;
                     tablaTmp->imprimirTabla();
                     return true;
                 }
                 else{
                     //error columna no existe
+                    com Puerto;
+                    Puerto.enviar("msg3");
                     return false;
                 }
 
             }
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg2");
             return false;//error no existe la tabla
         }
     }
@@ -2107,7 +2293,8 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 
                     }
                     else{
-                        cout<<"error no se introdujo un int"<<endl;
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return false;//error no introdujo un int
                     }
 
@@ -2126,6 +2313,8 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 
                     }
                     else{
+                        com Puerto;
+                        Puerto.enviar("msg4");
                         return false;//error no introdujo un float
                     }
                 }
@@ -2141,7 +2330,8 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 
             }
             if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
-                cout<<"error no existe columna"<<endl;
+                com Puerto;
+                Puerto.enviar("msg3");
                 return false;//error no existe la columna
             }
 
@@ -2181,9 +2371,12 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
 
 
                     tablaTmp->imprimirTabla();
+                    actualizarArchivoTabla();
                     return true;
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return false;//error no introdujo un int
                 }
             }
@@ -2198,12 +2391,15 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                     listaTmp->setDato(pos,celda);
                     tablaTmp->insertarRegistro(listaTmp);
 
-
+                    _tablaTmp = tablaTmp;
                     tablaTmp->imprimirTabla();
+                    actualizarArchivoTabla();
                     return true;
 
                 }
                 else{
+                    com Puerto;
+                    Puerto.enviar("msg4");
                     return false;//error no introdujo un float
                 }
             }
@@ -2214,20 +2410,25 @@ bool Interprete::ejecutarInsert(string sentencia)//se ejecuta insert
                 listaTmp->setDato(pos,celda);
                 tablaTmp->insertarRegistro(listaTmp);
 
-
+                _tablaTmp = tablaTmp;
                 tablaTmp->imprimirTabla();
+                actualizarArchivoTabla();
                 return true;
                 //no se valida la conversion ya que un string puede tener caracteres numericos
             }
 
         }
         if(!existeColumna(tablaTmp,col)){//no se usa un else debido a que puede entrar en los primeros if
+            com Puerto;
+            Puerto.enviar("msg3");
             return false;//error no existe la columna
         }
 
 
     }
     if(!_listaTablas->existeTabla(nombre)){
+        com Puerto;
+        Puerto.enviar("msg2");
         return false;//no existe la tabla
     }
 }
@@ -2292,6 +2493,8 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
 
                         }
                         if(!tablaTmp->existeMetaDato(col)){
+                            com Puerto;
+                            Puerto.enviar("msg3");
                             return false;//error no existe la columna
                         }
                         if(token1.find(",")==string::npos){
@@ -2304,7 +2507,9 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                     }
                 }
             }
+            _tablaTmp = tablaTmp;
             tablaTmp->imprimirTabla();
+            actualizarArchivoTabla();
             return true;
 
 
@@ -2353,6 +2558,8 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
 
                     }
                     if(!tablaTmp->existeMetaDato(col)){
+                        com Puerto;
+                        Puerto.enviar("msg3");
                         return false;//error no existe la columna
                     }
                     if(token1.find(",")==string::npos){
@@ -2366,6 +2573,7 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                 }
 
             }
+            _tablaTmp = tablaTmp;
             tablaTmp->imprimirTabla();
             return true;
 
@@ -2377,6 +2585,8 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
 
     }
     if(!_listaTablas->existeTabla(nombre)){
+        com Puerto;
+        Puerto.enviar("msg4");
         return false;//la tabla no existe
     }
 
@@ -2396,27 +2606,30 @@ bool Interprete::ejecutarDelete(string sentencia)//se ejecuta delete
     if(_listaTablas->existeTabla(nombre)){
         int i=0;
 
-        tabla* tablaTmp = _listaTablas->buscarTabla(nombre);
+        tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
         string condiciones = sentencia.substr(sentencia.find("WHERE")+5,sentencia.length());
         while(i<tablaTmp->getMatrizDato()->getTamanio()){
-
+            cout<<"EnDelete:"<<tablaTmp->getMatrizDato()->buscarDatoEnPos(i,0)<<endl;
             if(cumpleWhere(tablaTmp,condiciones,i)){
                 tablaTmp->getMatrizDato()->deleteLista(i);
+                cout<<"luego de borrar"<<i<<endl;
             }
             else{
                 i++;
             }
         }
+        _tablaTmp = tablaTmp;
         tablaTmp->imprimirTabla();
+        actualizarArchivoTabla();
         return true;
 
 
     }
     if(!_listaTablas->existeTabla(nombre)){
+        com Puerto;
+        Puerto.enviar("msg2");
         return false;//no existe la tabla
     }
-
-    return true;
 }
 
 bool Interprete::ejecutarCreateIndex(string sentencia)//se ejecuta create index
@@ -2446,13 +2659,16 @@ bool Interprete::ejecutarCreateIndex(string sentencia)//se ejecuta create index
             return true;
         }
         else{
+            com Puerto;
+            Puerto.enviar("msg3");
             return false;//no existe la columna
         }
 
 
     }
     if(!_listaTablas->existeTabla(nombre)){
-
+        com Puerto;
+        Puerto.enviar("msg2");
         return false;//no existe la tabla
     }
 
@@ -2473,12 +2689,30 @@ bool Interprete::ejecutarCompress(string sentencia)//se ejecuta compress
         tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
         //aqui se realiza el compress
 
+
+        std::string str1 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".snar";
+
+        char *quieroComprimir = new char[str1.length() + 1];
+        strcpy(quieroComprimir, str1.c_str());
+
+
+        std::string str2 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".zipper";
+
+
+        char *archivoCompreso =new char[str2.length() + 1];
+        strcpy(archivoCompreso, str2.c_str());
+
+        cout << quieroComprimir << endl;
+        compress archivo(quieroComprimir,archivoCompreso);
+        archivo.encode();
+
         return true;
 
 
     }
     if(!_listaTablas->existeTabla(nombre)){
-
+        com Puerto;
+        Puerto.enviar("msg2");
         return false;//no existe la tabla
     }
 
@@ -2504,7 +2738,8 @@ bool Interprete::ejecutarBackup(string sentencia)//se ejecuta backup
 
     }
     if(!_listaTablas->existeTabla(nombre)){
-
+        com Puerto;
+        Puerto.enviar("msg2");
         return false;//no existe la tabla
     }
 }
@@ -2521,15 +2756,55 @@ bool Interprete::ejecutarRestore(string sentencia)//se ejecuta restore
 
     if(_listaTablas->existeTabla(nombre)){
         tabla *tablaTmp = _listaTablas->buscarTabla(nombre);
-        //aqui se realiza el backup
+        //aqui se realiza el restore
+
+        std::string str1 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".zipper";
+
+        char *quieroDeComprimir = new char[str1.length() + 1];
+        strcpy(quieroDeComprimir, str1.c_str());
+
+
+        std::string str2 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".snar";
+
+
+        char *archivoListo =new char[str2.length() + 1];
+        strcpy(archivoListo, str2.c_str());
+
+        compress archivo(archivoListo,quieroDeComprimir);
+        archivo.decode();
 
         return true;
 
 
     }
+
+    cout << "nombrepase" << endl;
     if(!_listaTablas->existeTabla(nombre)){
 
-        return false;//no existe la tabla
+        std::string str1 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".zipper";
+
+        char *quieroDeComprimir = new char[str1.length() + 1];
+        strcpy(quieroDeComprimir, str1.c_str());
+
+
+        std::string str2 = "C:\\Users\\Shagy\\Desktop\\build\\" + nombre + ".snar";
+
+
+        char *archivoListo =new char[str2.length() + 1];
+        strcpy(archivoListo, str2.c_str());
+
+        compress archivoComp(archivoListo,quieroDeComprimir);
+        archivoComp.decode();
+        cout << nombre << endl;
+
+        ArchivoAleatorio<Registro> archivo(nombre + ".snar");
+        if (archivo.openFile(append)){
+            cout << "Si existe" << endl;
+            Registro RFinal("Termine");
+            cout << archivo.getRecordInPos(0,RFinal).getDato() << endl;
+            archivo.closeFile();
+        }
+
     }
 }
 
@@ -2538,7 +2813,6 @@ bool Interprete::ejecutarRestore(string sentencia)//se ejecuta restore
 int Interprete::cargaTablas()
 {
     string path = "./";
-
     DIR *dir = opendir(path.c_str());
     if(!dir)
     {
@@ -2552,8 +2826,6 @@ int Interprete::cargaTablas()
             cout << entry->d_name << endl;
 
             generarTabla(entry->d_name);
-
-
         }
     }
     closedir(dir);
@@ -2567,6 +2839,8 @@ bool Interprete::has_suffix(const string &s, const string &suffix)
 void Interprete::generarTabla(string pName)
 {
 
+
+    qDebug("Cargo Tabla");
     ArchivoAleatorio<Registro> archivo(pName);
     if (archivo.openFile(truncate)){ //si se puede abrir el archivo
         _listaTablas->insertarFinal(pName,"BaseDatos");
@@ -2575,9 +2849,13 @@ void Interprete::generarTabla(string pName)
         Registro RFinal("♥");
         int contador = 0;
         ListaDato *temporal = new ListaDato();
+
         for(int i = 0; archivo.getRecordInPos(i,RFinal).getDato() != RFinal.getDato(); i++){
+
             string archivoTmp = archivo.getRecordInPos(i,RFinal).getDato();
-            if(contador <_listaTablas->getTail()->getTabla()->getMetaDato().getTamanio()){
+
+
+            if(contador <_listaTablas->getTail()->getTabla()->getMetaDato()->getTamanio()){
                 temporal->insertarFinal(archivoTmp);
                 contador++;
             }
@@ -2593,6 +2871,63 @@ void Interprete::generarTabla(string pName)
 
         archivo.closeFile();
     }
+
+}
+
+void Interprete::crearArchivoTabla()
+{
+    qDebug("Nuevo Archivo Tabla");
+    string Nombre = _tablaTmp->getNombre();
+    string MetaArchivo = _tablaTmp->getMetaDato()->listaMetaDatoToString();
+
+    char *cstr = new char[MetaArchivo.length() + 1];
+    strcpy(cstr, MetaArchivo.c_str());
+
+    ArchivoAleatorio<Registro> archivo(Nombre + ".snar");
+    if (archivo.openFile(truncate)){ //si se puede abrir el archivo
+
+        Registro r1((cstr));
+        archivo.writeRecord(r1);
+
+        archivo.closeFile();
+    }
+
+}
+
+void Interprete::actualizarArchivoTabla()
+{
+    std::ofstream ofs;
+    string tmp = _tablaTmp->getNombre() + ".snar";
+    char *cstr = new char[tmp.length() + 1];
+    strcpy(cstr, tmp.c_str());
+    //Limpio archivo para actualizarlo
+    ofs.open(cstr, std::ofstream::out | std::ofstream::trunc);
+    ofs.close();
+
+
+    ArchivoAleatorio<Registro> archivo(cstr);
+
+    string MetaArchivo = _tablaTmp->getMetaDato()->listaMetaDatoToString();
+    char *cstr2 = new char[MetaArchivo.length() + 1];
+    strcpy(cstr2, MetaArchivo.c_str());
+
+
+    if (archivo.openFile(truncate)){ //si se puede abrir el archivo
+        Registro r1((cstr2));
+        archivo.writeRecord(r1);
+        for(int i = 0; i < _tablaTmp->getMatrizDato()->getTamanio(); i++){
+
+            string registro = _tablaTmp->getMatrizDato()->listaToString(i);
+            char *cstr3 = new char[registro.length() + 1];
+            strcpy(cstr3, registro.c_str());
+
+            Registro r1((cstr3));
+            archivo.writeRecord(r1);
+        }
+        archivo.closeFile();
+    }
+
+
 
 }
 /*------------------------------------------------------------------------------*/

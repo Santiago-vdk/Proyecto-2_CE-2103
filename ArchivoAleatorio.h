@@ -73,8 +73,9 @@ ArchivoAleatorio<TIPOREGISTRO>::ArchivoAleatorio(const string & fileName){
 template <class TIPOREGISTRO>
 bool ArchivoAleatorio<TIPOREGISTRO>::openFile(openMode mode){
     if (mode == append){ //si el archivo existe, se abre para lectura y agregar al final
-        file.open(fileName.c_str(),ios::in | ios::out | ios::ate);
+        file.open(fileName.c_str(),ios::in | ios::out | ios::ate );
     }
+
     else{ // si el archivo no existe se crea y se abre para lectura y escritura
 
         file.open(fileName.c_str(),ios::in | ios::out | ios::trunc);
@@ -161,10 +162,13 @@ long ArchivoAleatorio<TIPOREGISTRO>::getRecord(TIPOREGISTRO & registro){
 template <class TIPOREGISTRO>
 TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getFirstRecord(){
     TIPOREGISTRO registroAux;
-    file.clear();
-    reset();
+    //file.clear();
+    //reset();
+    file.seekg(0);
+    cout << "first" << endl;
     registroAux.read(file);
     return registroAux;
+
 }
 
 
@@ -173,15 +177,21 @@ TIPOREGISTRO ArchivoAleatorio<TIPOREGISTRO>::getRecordInPos(int i, TIPOREGISTRO 
     TIPOREGISTRO registroAux;
     file.clear();
     reset();
+    file.seekg(0);
     int j = 0;
+
     while ((j < i)    && !file.eof()){
         registroAux.read(file);
+        cout << registroAux.getDato() << endl;
         j++;
     }
     if(file.eof()){
         cout << "Llegue al final del archivo" << endl;
         return registroTmp;
-    }    return registroAux;
+    }
+    cout << "aca" << endl;
+
+    return registroAux;
 
 
 }

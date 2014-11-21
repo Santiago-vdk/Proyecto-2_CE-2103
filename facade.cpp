@@ -19,4 +19,9 @@ bool Facade::ejecutar(string sentencia)
     return _interprete->ejecutar(sentencia);
 }
 
+tabla *Facade::getTablaTmp()
+{
+    return _interprete->getTablaTmp();
+}
+
 

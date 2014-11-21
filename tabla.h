@@ -21,9 +21,11 @@ public:
     void setMetaDato(string pMetaDato);
     void setMetaDatoSinTipo(string pMetaDato);
 
-    ListaMetaDato *getMetaDato();    void imprimirTabla();
+
+    void imprimirTabla();
     bool existeMetaDato(string pmetaDato);
     bool existeListaMetaDato(string plistaMetaDato);
+    ListaMetaDato *getMetaDato();
 
 
 private:
