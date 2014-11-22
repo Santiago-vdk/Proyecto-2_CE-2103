@@ -306,7 +306,9 @@ void GUI::crearPalabrasReservadas()
     listaPalabrasReservadas.append("COMPRESS TABLE");
     listaPalabrasReservadas.append("BACKUP TABLE");
     listaPalabrasReservadas.append("RESTORE TABLE");
-
+    listaPalabrasReservadas.append("VALUES");
+    listaPalabrasReservadas.append("WHERE");
+    listaPalabrasReservadas.append("FROM");
 
     //Tipos de datos reservados
     listaTiposReservados.append("String");

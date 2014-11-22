@@ -2489,7 +2489,26 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                         }
                         if(tablaTmp->existeMetaDato(col)){
                             int j = tablaTmp->getMetaDato()->PosMetaDato(col);
-                            tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                            if(tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Integer")==0 ||
+                                    tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Decimal")==0){
+                                std::string str = valor;
+                                QString test = QString::fromStdString(str);
+                                bool ok;
+                                bool ok2;
+                                test.toInt(&ok);
+                                test.toFloat(&ok2);
+                                if(ok || ok2){
+                                    tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                                }
+                                else{
+                                    com Puerto;
+                                    Puerto.enviar("msg4");
+                                    return false;//error tipo
+                                }
+                            }
+                            else{
+                                tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                            }
 
                         }
                         if(!tablaTmp->existeMetaDato(col)){
