@@ -2489,7 +2489,19 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                         }
                         if(tablaTmp->existeMetaDato(col)){
                             int j = tablaTmp->getMetaDato()->PosMetaDato(col);
-                            tablaTmp->getMatrizDato()->setDato(i,j,valor);
+
+                            if(tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Integer") ||
+                                   ablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Decimal")){
+
+
+                                tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                                else{
+
+                                }
+                            }
+                            else{
+                                ablaTmp->getMatrizDato()->setDato(i,j,valor);
+                            }
 
                         }
                         if(!tablaTmp->existeMetaDato(col)){
