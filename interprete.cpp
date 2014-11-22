@@ -2489,7 +2489,7 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                         }
                         if(tablaTmp->existeMetaDato(col)){
                             int j = tablaTmp->getMetaDato()->PosMetaDato(col);
-                            if(tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Integer")==0 ||
+           if(tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Integer")==0 ||
                                     tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Decimal")==0){
                                 std::string str = valor;
                                 QString test = QString::fromStdString(str);
@@ -2508,6 +2508,18 @@ bool Interprete::ejecutarUpdate(string sentencia)//se ejecuta update
                             }
                             else{
                                 tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                            }
+                            if(tablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Integer") ||
+                                   ablaTmp->getMetaDato()->buscarPosicion(j)->getTipometaDato().compare("Decimal")){
+
+
+                                tablaTmp->getMatrizDato()->setDato(i,j,valor);
+                                else{
+
+                                }
+                            }
+                            else{
+                                ablaTmp->getMatrizDato()->setDato(i,j,valor);
                             }
 
                         }
